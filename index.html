@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Regulariza Excellington - Gestão de Imóveis em Saneamento</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,12 @@
             --bg-dark: #121212;
             --card-dark: #1e1e1e;
         }
-        body {
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
             background-color: var(--bg-dark);
             color: #e0e0e0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -25,7 +30,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .circle-btn:hover {
-            transform: scale(1.08);
+            transform: scale(1.06);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
         .status-pendente { background-color: #ef4444; color: #ffffff; border-color: #dc2626; }
@@ -43,62 +48,62 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col w-full overflow-x-hidden">
 
-    <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
-    <header class="bg-[#1e1e1e] border-b border-gray-800 sticky top-0 z-30 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+    <!-- BARRA SUPERIOR DE NAVEGAÇÃO RESPONSIVA -->
+    <header class="bg-[#1e1e1e] border-b border-gray-800 sticky top-0 z-30 shadow-lg w-full">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-md shrink-0">
                     <i class="fa-solid fa-building-flag"></i>
                 </div>
-                <div>
-                    <h1 class="text-lg font-bold text-white tracking-wide">Regulariza Excellington</h1>
-                    <p class="text-xs text-gray-400">Regularização de Imóveis • Saneamento</p>
+                <div class="min-w-0">
+                    <h1 class="text-sm sm:text-lg font-bold text-white tracking-wide truncate">Regulariza Excellington</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-400 truncate">Regularização de Imóveis • Saneamento</p>
                 </div>
             </div>
 
             <!-- Perfil e Ações do Cabeçalho -->
-            <div class="flex items-center space-x-3">
-                <div id="userProfileBar" class="hidden md:flex items-center bg-[#171a21] border border-[#2a2f3d] px-3 py-1.5 rounded-lg text-xs space-x-2">
+            <div class="flex items-center space-x-1.5 sm:space-x-3 shrink-0 ml-auto">
+                <div id="userProfileBar" class="hidden sm:flex items-center bg-[#171a21] border border-[#2a2f3d] px-2.5 py-1 rounded-lg text-xs space-x-1.5">
                     <i class="fa-solid fa-user-tie text-blue-400"></i>
-                    <span class="text-gray-400">Resp:</span>
-                    <span id="profileUsernameDisplay" class="font-bold text-blue-300">-</span>
-                    <button onclick="openUsernameModal()" class="text-amber-500 hover:underline text-xs ml-1"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                    <span class="text-gray-400 hidden md:inline">Resp:</span>
+                    <span id="profileUsernameDisplay" class="font-bold text-blue-300 truncate max-w-[100px]">-</span>
+                    <button onclick="openUsernameModal()" class="text-amber-500 hover:underline text-xs ml-1" title="Editar Nome"><i class="fa-solid fa-pen text-[10px]"></i></button>
                 </div>
 
                 <button onclick="openTermsModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-lg border border-gray-700 transition" title="Termos de Uso e Responsabilidade">
-                    <i class="fa-solid fa-file-contract"></i>
+                    <i class="fa-solid fa-file-contract text-xs sm:text-sm"></i>
                 </button>
                 <button onclick="openActivationModal(false)" class="bg-gray-800 hover:bg-gray-700 text-amber-500 p-2 rounded-lg border border-gray-700 transition" title="Ativação de Licença">
-                    <i class="fa-solid fa-key"></i>
+                    <i class="fa-solid fa-key text-xs sm:text-sm"></i>
                 </button>
                 <button onclick="exitApp()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 p-2 rounded-lg border border-red-800/50 transition" title="Sair do Aplicativo">
-                    <i class="fa-solid fa-power-off"></i>
+                    <i class="fa-solid fa-power-off text-xs sm:text-sm"></i>
                 </button>
             </div>
         </div>
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col space-y-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col space-y-4 sm:space-y-6 overflow-x-hidden">
 
-        <!-- NAVEGAÇÃO BREADCRUMB / VOLTAR -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#1e1e1e] border border-gray-800 p-4 rounded-xl gap-4">
-            <div class="flex items-center space-x-2 text-sm text-gray-400 flex-wrap" id="breadcrumbPath">
+        <!-- NAVEGAÇÃO BREADCRUMB / BOTOEIRA RESPONSIVA -->
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-[#1e1e1e] border border-gray-800 p-3 sm:p-4 rounded-xl gap-3 w-full">
+            <div class="flex items-center space-x-2 text-xs sm:text-sm text-gray-400 flex-wrap overflow-hidden" id="breadcrumbPath">
                 <!-- Preenchido via JS -->
             </div>
             
-            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                <button id="btnBackNode" onclick="navigateBack()" class="hidden bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 flex items-center space-x-1.5 transition">
+            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end flex-wrap gap-y-2">
+                <button id="btnBackNode" onclick="navigateBack()" class="hidden flex-1 sm:flex-none bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 items-center justify-center space-x-1.5 transition">
                     <i class="fa-solid fa-arrow-left"></i>
-                    <span>Voltar Nível</span>
+                    <span>Voltar</span>
                 </button>
-                <button id="btnExportPDF" onclick="exportCurrentViewPDF()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center space-x-1.5 transition shadow">
+                <button id="btnExportPDF" onclick="exportCurrentViewPDF()" class="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-1.5 transition shadow">
                     <i class="fa-solid fa-file-pdf"></i>
                     <span>Relatório PDF</span>
                 </button>
-                <button id="btnAddNode" onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center space-x-1.5 transition shadow">
+                <button id="btnAddNode" onclick="openAddModal()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-1.5 transition shadow">
                     <i class="fa-solid fa-plus"></i>
                     <span id="lblAddBtn">Novo Imóvel</span>
                 </button>
@@ -106,24 +111,25 @@
         </div>
 
         <!-- PAINEL CENTRAL DE VISUALIZAÇÃO EM CÍRCULOS (NODES) -->
-        <section class="bg-[#1e1e1e] border border-gray-800 rounded-2xl p-6 md:p-8 flex-1 flex flex-col min-h-[450px]">
-            <div class="mb-6 flex justify-between items-center border-b border-gray-800 pb-4">
+        <section class="bg-[#1e1e1e] border border-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 flex-1 flex flex-col min-h-[400px] w-full overflow-hidden">
+            <div class="mb-4 sm:mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-gray-800 pb-4 gap-3">
                 <div>
-                    <h2 class="text-xl font-bold text-white flex items-center gap-2" id="currentViewTitle">
+                    <h2 class="text-base sm:text-xl font-bold text-white flex items-center gap-2" id="currentViewTitle">
                         <i class="fa-solid fa-city text-blue-500"></i> Imóveis em Regularização
                     </h2>
-                    <p class="text-xs text-gray-400 mt-1" id="currentViewSubtitle">Clique num círculo para acessar as atividades do imóvel.</p>
+                    <p class="text-[11px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1" id="currentViewSubtitle">Clique num círculo para acessar as atividades do imóvel.</p>
                 </div>
-                <div class="flex items-center space-x-3 text-xs">
-                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Pendente</span>
-                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Em Andamento</span>
-                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Em Exigência</span>
-                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Concluído</span>
+                <!-- Legendas ajustáveis -->
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] sm:text-xs w-full lg:w-auto">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span> Pendente</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span> Em Andamento</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 shrink-0"></span> Em Exigência</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span> Concluído</span>
                 </div>
             </div>
 
-            <!-- CONTAINER DOS CÍRCULOS (GRID) -->
-            <div id="circlesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-auto py-4">
+            <!-- CONTAINER DOS CÍRCULOS (GRID RESPONSIVO) -->
+            <div id="circlesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 my-auto py-2 sm:py-4 w-full">
                 <!-- Círculos injetados via JS -->
             </div>
         </section>
@@ -131,19 +137,19 @@
     </main>
 
     <!-- RODAPÉ -->
-    <footer class="bg-[#1e1e1e] border-t border-gray-800 py-4 px-6 text-center text-xs text-gray-500">
-        <p>Regulariza Excellington • Ferramenta de Gestão Imobiliária para Saneamento Básicos</p>
+    <footer class="bg-[#1e1e1e] border-t border-gray-800 py-3 sm:py-4 px-4 text-center text-[10px] sm:text-xs text-gray-500 w-full">
+        <p>Regulariza Excellington • Ferramenta de Gestão Imobiliária para Saneamento Básico</p>
     </footer>
 
     <!-- MODAL: MANUTENÇÃO DE DADOS (CRIAR / EDITAR) -->
-    <div id="crudModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
-        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-lg space-y-4 shadow-2xl">
+    <div id="crudModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-lg space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 id="crudModalTitle" class="text-lg font-bold text-white">Editar Registro</h3>
-                <button onclick="closeCrudModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h3 id="crudModalTitle" class="text-base sm:text-lg font-bold text-white">Editar Registro</h3>
+                <button onclick="closeCrudModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <form id="crudForm" onsubmit="handleCrudSubmit(event)" class="space-y-4 text-xs">
+            <form id="crudForm" onsubmit="handleCrudSubmit(event)" class="space-y-3 sm:space-y-4 text-xs">
                 <div>
                     <label class="block text-gray-400 mb-1" id="lblFormTitle">Título / Nome:</label>
                     <input type="text" id="inputFormTitle" required class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
@@ -154,7 +160,7 @@
                         <label class="block text-gray-400 mb-1">Endereço Completo:</label>
                         <input type="text" id="inputFormAddress" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-gray-400 mb-1">Matrícula / Transcrição:</label>
                             <input type="text" id="inputFormMatricula" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
@@ -193,13 +199,13 @@
     </div>
 
     <!-- MODAL: CADASTRO / EDIÇÃO DE USUÁRIO RESPONSÁVEL -->
-    <div id="usernameModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
-        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-md space-y-4">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+    <div id="usernameModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-md space-y-4">
+            <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-user-gear text-blue-500"></i> Identificação do Responsável
             </h3>
-            <p class="text-xs text-gray-400">Informe o seu nome completo para que conste na gestão e nos relatórios PDF emitidos.</p>
-            <input type="text" id="registerUsernameInput" placeholder="Ex: Carlos Oliveira - Assistente Administrativo" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500">
+            <p class="text-xs text-gray-400">Informe o seu nome completo para constar na gestão e nos relatórios PDF emitidos.</p>
+            <input type="text" id="registerUsernameInput" placeholder="Ex: Carlos Oliveira - Assistente Administrativo" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500">
             <div class="flex justify-end space-x-2">
                 <button id="cancelUsernameBtn" onclick="closeUsernameModal()" class="hidden px-4 py-2 bg-gray-700 text-gray-300 rounded-lg text-xs font-medium">Cancelar</button>
                 <button onclick="handleUsernameSubmit(event)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">Salvar Responsável</button>
@@ -208,13 +214,13 @@
     </div>
 
     <!-- MODAL: TERMOS DE USO E RESPONSABILIDADE OPERACIONAL -->
-    <div id="termsModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
-        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-2xl space-y-4 max-h-[85vh] flex flex-col">
+    <div id="termsModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-2xl space-y-4 max-h-[85vh] flex flex-col">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                     <i class="fa-solid fa-shield-halved text-blue-500"></i> Termo de Atribuições e Responsabilidade
                 </h3>
-                <button onclick="closeTermsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeTermsModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto custom-scrollbar text-xs text-gray-300 space-y-3 pr-2 leading-relaxed">
                 <p class="font-bold text-amber-400">ÂMBITO DE ATUAÇÃO ADMINISTRATIVA EM SANEAMENTO</p>
@@ -230,8 +236,8 @@
     </div>
 
     <!-- MODAL: ATIVAÇÃO MENSAL VIA PIX (EXCELLINGTON MODEL) -->
-    <div id="activationModal" class="fixed inset-0 bg-black/85 hidden items-center justify-center p-4 z-50">
-        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+    <div id="activationModal" class="fixed inset-0 bg-black/85 hidden items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                 <div class="flex items-center space-x-2">
                     <div class="bg-emerald-900/40 p-2 rounded-full border border-emerald-600/40 flex items-center justify-center">
@@ -239,7 +245,7 @@
                     </div>
                     <h3 class="text-base font-bold text-white">Renovação Mensal Pix</h3>
                 </div>
-                <button id="activationCloseBtn" onclick="toggleActivationModal()" class="text-gray-400 hover:text-white text-lg">&times;</button>
+                <button id="activationCloseBtn" onclick="toggleActivationModal()" class="text-gray-400 hover:text-white text-lg p-1">&times;</button>
             </div>
             
             <p class="text-xs text-gray-400 leading-relaxed">
@@ -250,11 +256,11 @@
                 <div class="text-center text-[10px] text-gray-400 font-bold tracking-wider uppercase mb-1">Dados para geração do código</div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Usuário:</span>
-                    <span id="activationUsernameDisplay" class="font-bold text-blue-400">-</span>
+                    <span id="activationUsernameDisplay" class="font-bold text-blue-400 truncate max-w-[150px]">-</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-400">Data de Expiração:</span>
-                    <span id="activationExpirationDisplay" class="font-bold text-red-400">-</span>
+                    <span id="activationExpirationDisplay" class="font-bold text-red-400 text-right">-</span>
                 </div>
             </div>
 
@@ -276,18 +282,15 @@
 
     <!-- SCRIPT PRINCIPAL E LÓGICA DE APLICAÇÃO -->
     <script>
-        // Chaves do LocalStorage
         const USERNAME_KEY = 'excellington_regulariza_username_v1';
         const EXPIRATION_KEY = 'excellington_regulariza_expiration_v1';
         const DATA_KEY = 'excellington_regulariza_data_v1';
 
-        // Estado da Navegação (Nível 1: Imóveis | Nível 2: Atividades | Nível 3: Passos)
         let currentLevel = 1; 
         let selectedImovelId = null;
         let selectedActivityId = null;
         let isAppForcedBlocked = false;
 
-        // Estrutura de Dados Padrão (Saneamento)
         const defaultData = [
             {
                 id: 'imv-1',
@@ -354,7 +357,6 @@
 
         let appData = [];
 
-        // INICIALIZAÇÃO DA APLICAÇÃO
         window.onload = function() {
             loadAppData();
             checkAppAccess();
@@ -379,7 +381,6 @@
             localStorage.setItem(DATA_KEY, JSON.stringify(appData));
         }
 
-        // CÁLCULO DINÂMICO DE PROGRESSO E CORES
         function calculateStatus(node) {
             let totalSteps = 0;
             let completedSteps = 0;
@@ -416,7 +417,6 @@
             }
         }
 
-        // RENDERIZAÇÃO DE INTERFACE
         function renderView() {
             const container = document.getElementById('circlesContainer');
             const breadcrumb = document.getElementById('breadcrumbPath');
@@ -427,34 +427,34 @@
 
             container.innerHTML = '';
 
-            // NÍVEL 1: LISTA DE IMÓVEIS
             if (currentLevel === 1) {
                 breadcrumb.innerHTML = `<span class="text-white font-semibold flex items-center gap-1"><i class="fa-solid fa-city"></i> Imóveis</span>`;
                 titleEl.innerHTML = `<i class="fa-solid fa-city text-blue-500"></i> Imóveis em Regularização`;
                 subtitleEl.innerText = `Clique num imóvel para gerir as suas atividades de regularização.`;
                 btnBack.classList.add('hidden');
+                btnBack.classList.remove('flex');
                 lblAdd.innerText = 'Novo Imóvel';
 
                 appData.forEach(imovel => {
                     const stat = calculateStatus(imovel);
                     const card = document.createElement('div');
-                    card.className = `flex flex-col items-center justify-between p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group`;
+                    card.className = `flex flex-col items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group w-full`;
                     
                     card.innerHTML = `
-                        <div class="absolute top-3 right-3 flex space-x-1 opacity-80 group-hover:opacity-100">
+                        <div class="absolute top-2.5 right-2.5 flex space-x-1 opacity-90 sm:opacity-80 group-hover:opacity-100">
                             <button onclick="openEditImovel('${imovel.id}', event)" class="text-gray-400 hover:text-amber-400 p-1" title="Editar Imóvel"><i class="fa-solid fa-pen text-xs"></i></button>
                             <button onclick="deleteImovel('${imovel.id}', event)" class="text-gray-400 hover:text-red-400 p-1" title="Excluir Imóvel"><i class="fa-solid fa-trash text-xs"></i></button>
                         </div>
                         
-                        <button onclick="selectImovel('${imovel.id}')" class="circle-btn w-28 h-28 rounded-full ${stat.statusClass} border-4 flex flex-col items-center justify-center my-3 shadow-xl">
-                            <i class="fa-solid fa-building text-2xl mb-1"></i>
-                            <span class="text-base font-extrabold">${stat.percent}%</span>
+                        <button onclick="selectImovel('${imovel.id}')" class="circle-btn w-24 h-24 sm:w-28 sm:h-28 rounded-full ${stat.statusClass} border-4 flex flex-col items-center justify-center my-2 sm:my-3 shadow-xl shrink-0">
+                            <i class="fa-solid fa-building text-xl sm:text-2xl mb-1"></i>
+                            <span class="text-sm sm:text-base font-extrabold">${stat.percent}%</span>
                         </button>
 
-                        <div class="text-center w-full mt-2">
-                            <h4 class="font-bold text-white text-sm truncate px-2" title="${imovel.title}">${imovel.title}</h4>
-                            <p class="text-[11px] text-gray-400 truncate mt-0.5">${imovel.type}</p>
-                            <div class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${stat.badgeClass}">
+                        <div class="text-center w-full mt-1 sm:mt-2 min-w-0">
+                            <h4 class="font-bold text-white text-xs sm:text-sm truncate px-1" title="${imovel.title}">${imovel.title}</h4>
+                            <p class="text-[10px] sm:text-[11px] text-gray-400 truncate mt-0.5">${imovel.type}</p>
+                            <div class="mt-2.5 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${stat.badgeClass}">
                                 ${stat.text}
                             </div>
                         </div>
@@ -463,40 +463,40 @@
                 });
             }
 
-            // NÍVEL 2: ATIVIDADES DO IMÓVEL
             else if (currentLevel === 2) {
                 const imovel = appData.find(i => i.id === selectedImovelId);
                 if (!imovel) { navigateBack(); return; }
 
                 breadcrumb.innerHTML = `
-                    <span class="cursor-pointer hover:text-blue-400" onclick="navigateBack()"><i class="fa-solid fa-city"></i> Imóveis</span>
+                    <span class="cursor-pointer hover:text-blue-400 flex items-center gap-1" onclick="navigateBack()"><i class="fa-solid fa-city"></i> Imóveis</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
-                    <span class="text-white font-semibold truncate max-w-[200px]">${imovel.title}</span>
+                    <span class="text-white font-semibold truncate max-w-[140px] sm:max-w-[200px]">${imovel.title}</span>
                 `;
                 titleEl.innerHTML = `<i class="fa-solid fa-list-check text-blue-500"></i> Atividades: ${imovel.title}`;
                 subtitleEl.innerText = `Clique numa atividade para abrir o checklist de passos operacionais.`;
                 btnBack.classList.remove('hidden');
+                btnBack.classList.add('flex');
                 lblAdd.innerText = 'Nova Atividade';
 
                 imovel.activities.forEach(act => {
                     const stat = calculateStatus(act);
                     const card = document.createElement('div');
-                    card.className = `flex flex-col items-center justify-between p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group`;
+                    card.className = `flex flex-col items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group w-full`;
                     
                     card.innerHTML = `
-                        <div class="absolute top-3 right-3 flex space-x-1 opacity-80 group-hover:opacity-100">
+                        <div class="absolute top-2.5 right-2.5 flex space-x-1 opacity-90 sm:opacity-80 group-hover:opacity-100">
                             <button onclick="openEditActivity('${act.id}', event)" class="text-gray-400 hover:text-amber-400 p-1" title="Editar Atividade"><i class="fa-solid fa-pen text-xs"></i></button>
                             <button onclick="deleteActivity('${act.id}', event)" class="text-gray-400 hover:text-red-400 p-1" title="Excluir Atividade"><i class="fa-solid fa-trash text-xs"></i></button>
                         </div>
                         
-                        <button onclick="selectActivity('${act.id}')" class="circle-btn w-24 h-24 rounded-full ${stat.statusClass} border-4 flex flex-col items-center justify-center my-3 shadow-xl">
-                            <i class="fa-solid fa-tasks text-xl mb-1"></i>
-                            <span class="text-sm font-extrabold">${stat.percent}%</span>
+                        <button onclick="selectActivity('${act.id}')" class="circle-btn w-20 h-20 sm:w-24 sm:h-24 rounded-full ${stat.statusClass} border-4 flex flex-col items-center justify-center my-2 sm:my-3 shadow-xl shrink-0">
+                            <i class="fa-solid fa-tasks text-lg sm:text-xl mb-1"></i>
+                            <span class="text-xs sm:text-sm font-extrabold">${stat.percent}%</span>
                         </button>
 
-                        <div class="text-center w-full mt-2">
-                            <h4 class="font-bold text-white text-xs line-clamp-2 h-8 px-1" title="${act.title}">${act.title}</h4>
-                            <div class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${stat.badgeClass}">
+                        <div class="text-center w-full mt-1 sm:mt-2 min-w-0">
+                            <h4 class="font-bold text-white text-xs line-clamp-2 h-7 sm:h-8 px-1" title="${act.title}">${act.title}</h4>
+                            <div class="mt-2.5 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${stat.badgeClass}">
                                 ${stat.text}
                             </div>
                         </div>
@@ -505,7 +505,6 @@
                 });
             }
 
-            // NÍVEL 3: PASSOS / CHECKLIST DA ATIVIDADE
             else if (currentLevel === 3) {
                 const imovel = appData.find(i => i.id === selectedImovelId);
                 const act = imovel ? imovel.activities.find(a => a.id === selectedActivityId) : null;
@@ -514,13 +513,14 @@
                 breadcrumb.innerHTML = `
                     <span class="cursor-pointer hover:text-blue-400" onclick="currentLevel=1; renderView();">Imóveis</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
-                    <span class="cursor-pointer hover:text-blue-400 truncate max-w-[150px]" onclick="navigateBack()">${imovel.title}</span>
+                    <span class="cursor-pointer hover:text-blue-400 truncate max-w-[100px] sm:max-w-[150px]" onclick="navigateBack()">${imovel.title}</span>
                     <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
-                    <span class="text-white font-semibold truncate max-w-[180px]">${act.title}</span>
+                    <span class="text-white font-semibold truncate max-w-[120px] sm:max-w-[180px]">${act.title}</span>
                 `;
                 titleEl.innerHTML = `<i class="fa-solid fa-check-double text-blue-500"></i> Passos: ${act.title}`;
                 subtitleEl.innerText = `Altere o status de cada passo ou adicione novos itens de controlo.`;
                 btnBack.classList.remove('hidden');
+                btnBack.classList.add('flex');
                 lblAdd.innerText = 'Novo Passo';
 
                 act.steps.forEach(step => {
@@ -531,20 +531,20 @@
                     else if (step.status === 'Em Exigência') { statusClass = 'status-exigencia'; badgeClass = 'badge-exigencia'; }
 
                     const card = document.createElement('div');
-                    card.className = `flex flex-col items-center justify-between p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group`;
+                    card.className = `flex flex-col items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group w-full`;
                     
                     card.innerHTML = `
-                        <div class="absolute top-3 right-3 flex space-x-1 opacity-80 group-hover:opacity-100">
+                        <div class="absolute top-2.5 right-2.5 flex space-x-1 opacity-90 sm:opacity-80 group-hover:opacity-100">
                             <button onclick="openEditStep('${step.id}', event)" class="text-gray-400 hover:text-amber-400 p-1" title="Editar Passo"><i class="fa-solid fa-pen text-xs"></i></button>
                             <button onclick="deleteStep('${step.id}', event)" class="text-gray-400 hover:text-red-400 p-1" title="Excluir Passo"><i class="fa-solid fa-trash text-xs"></i></button>
                         </div>
                         
-                        <button onclick="cycleStepStatus('${step.id}')" class="circle-btn w-20 h-20 rounded-full ${statusClass} border-4 flex flex-col items-center justify-center my-3 shadow-xl" title="Clique para alternar o status">
-                            <i class="fa-solid fa-check text-lg"></i>
+                        <button onclick="cycleStepStatus('${step.id}')" class="circle-btn w-16 h-16 sm:w-20 sm:h-20 rounded-full ${statusClass} border-4 flex flex-col items-center justify-center my-2 sm:my-3 shadow-xl shrink-0" title="Clique para alternar o status">
+                            <i class="fa-solid fa-check text-base sm:text-lg"></i>
                         </button>
 
-                        <div class="text-center w-full mt-2">
-                            <h4 class="font-medium text-white text-xs line-clamp-3 h-12 px-1" title="${step.title}">${step.title}</h4>
+                        <div class="text-center w-full mt-1 sm:mt-2 min-w-0">
+                            <h4 class="font-medium text-white text-xs line-clamp-3 h-10 sm:h-12 px-1" title="${step.title}">${step.title}</h4>
                             <div class="mt-2 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">
                                 ${step.status}
                             </div>
@@ -555,7 +555,6 @@
             }
         }
 
-        // CONTROLADORES DE NAVEGAÇÃO
         function selectImovel(id) {
             selectedImovelId = id;
             currentLevel = 2;
@@ -593,8 +592,7 @@
             }
         }
 
-        // OPERAÇÕES DE MANUTENÇÃO (CRUD - ADICIONAR / EDITAR / EXCLUIR)
-        let editingTarget = null; // { type: 'imovel'|'activity'|'step', mode: 'add'|'edit', id: string }
+        let editingTarget = null;
 
         function openAddModal() {
             if (currentLevel === 1) {
@@ -777,7 +775,6 @@
             }
         }
 
-        // EMISSÃO DE RELATÓRIO EM PDF COM RESPONSÁVEL
         function exportCurrentViewPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -872,7 +869,6 @@
             doc.save(`Regularizacao_Imoveis_${today.replace(/\//g, '-')}.pdf`);
         }
 
-        // CONTROLO DE ACESSO, EXPIRAÇÃO E LICENÇA (MODELO EXCELLINGTON)
         function readStoredExpiration() {
             const raw = localStorage.getItem(EXPIRATION_KEY);
             if (raw === null || raw.trim() === '') return null;
@@ -1030,4 +1026,3 @@
     </script>
 </body>
 </html>
-
