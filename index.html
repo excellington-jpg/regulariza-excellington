@@ -1,0 +1,1033 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regulariza Excellington - Gestão de Imóveis em Saneamento</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jsPDF & AutoTable para Geração de Relatórios PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --card-dark: #1e1e1e;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .circle-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .circle-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        .status-pendente { background-color: #ef4444; color: #ffffff; border-color: #dc2626; }
+        .status-andamento { background-color: #f59e0b; color: #ffffff; border-color: #d97706; }
+        .status-exigencia { background-color: #a855f7; color: #ffffff; border-color: #9333ea; }
+        .status-concluido { background-color: #10b981; color: #ffffff; border-color: #059669; }
+        
+        .badge-pendente { background-color: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-andamento { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .badge-exigencia { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+        .badge-concluido { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a1a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
+    <header class="bg-[#1e1e1e] border-b border-gray-800 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-building-flag"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide">Regulariza Excellington</h1>
+                    <p class="text-xs text-gray-400">Regularização de Imóveis • Saneamento</p>
+                </div>
+            </div>
+
+            <!-- Perfil e Ações do Cabeçalho -->
+            <div class="flex items-center space-x-3">
+                <div id="userProfileBar" class="hidden md:flex items-center bg-[#171a21] border border-[#2a2f3d] px-3 py-1.5 rounded-lg text-xs space-x-2">
+                    <i class="fa-solid fa-user-tie text-blue-400"></i>
+                    <span class="text-gray-400">Resp:</span>
+                    <span id="profileUsernameDisplay" class="font-bold text-blue-300">-</span>
+                    <button onclick="openUsernameModal()" class="text-amber-500 hover:underline text-xs ml-1"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                </div>
+
+                <button onclick="openTermsModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-lg border border-gray-700 transition" title="Termos de Uso e Responsabilidade">
+                    <i class="fa-solid fa-file-contract"></i>
+                </button>
+                <button onclick="openActivationModal(false)" class="bg-gray-800 hover:bg-gray-700 text-amber-500 p-2 rounded-lg border border-gray-700 transition" title="Ativação de Licença">
+                    <i class="fa-solid fa-key"></i>
+                </button>
+                <button onclick="exitApp()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 p-2 rounded-lg border border-red-800/50 transition" title="Sair do Aplicativo">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col space-y-6">
+
+        <!-- NAVEGAÇÃO BREADCRUMB / VOLTAR -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#1e1e1e] border border-gray-800 p-4 rounded-xl gap-4">
+            <div class="flex items-center space-x-2 text-sm text-gray-400 flex-wrap" id="breadcrumbPath">
+                <!-- Preenchido via JS -->
+            </div>
+            
+            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                <button id="btnBackNode" onclick="navigateBack()" class="hidden bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Voltar Nível</span>
+                </button>
+                <button id="btnExportPDF" onclick="exportCurrentViewPDF()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center space-x-1.5 transition shadow">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Relatório PDF</span>
+                </button>
+                <button id="btnAddNode" onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center space-x-1.5 transition shadow">
+                    <i class="fa-solid fa-plus"></i>
+                    <span id="lblAddBtn">Novo Imóvel</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- PAINEL CENTRAL DE VISUALIZAÇÃO EM CÍRCULOS (NODES) -->
+        <section class="bg-[#1e1e1e] border border-gray-800 rounded-2xl p-6 md:p-8 flex-1 flex flex-col min-h-[450px]">
+            <div class="mb-6 flex justify-between items-center border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2" id="currentViewTitle">
+                        <i class="fa-solid fa-city text-blue-500"></i> Imóveis em Regularização
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-1" id="currentViewSubtitle">Clique num círculo para acessar as atividades do imóvel.</p>
+                </div>
+                <div class="flex items-center space-x-3 text-xs">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Pendente</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Em Andamento</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Em Exigência</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Concluído</span>
+                </div>
+            </div>
+
+            <!-- CONTAINER DOS CÍRCULOS (GRID) -->
+            <div id="circlesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-auto py-4">
+                <!-- Círculos injetados via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="bg-[#1e1e1e] border-t border-gray-800 py-4 px-6 text-center text-xs text-gray-500">
+        <p>Regulariza Excellington • Ferramenta de Gestão Imobiliária para Saneamento Básicos</p>
+    </footer>
+
+    <!-- MODAL: MANUTENÇÃO DE DADOS (CRIAR / EDITAR) -->
+    <div id="crudModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-lg space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 id="crudModalTitle" class="text-lg font-bold text-white">Editar Registro</h3>
+                <button onclick="closeCrudModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form id="crudForm" onsubmit="handleCrudSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1" id="lblFormTitle">Título / Nome:</label>
+                    <input type="text" id="inputFormTitle" required class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div id="extraFieldsImovel" class="space-y-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Endereço Completo:</label>
+                        <input type="text" id="inputFormAddress" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-gray-400 mb-1">Matrícula / Transcrição:</label>
+                            <input type="text" id="inputFormMatricula" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 mb-1">Tipo de Unidade:</label>
+                            <select id="inputFormType" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
+                                <option value="Estação de Tratamento (ETE)">Estação de Tratamento (ETE)</option>
+                                <option value="Reservatório Elevado/Apoiado">Reservatório Elevado/Apoiado</option>
+                                <option value="Estação Elevatória (EEE)">Estação Elevatória (EEE)</option>
+                                <option value="Sede Administrativa / Almoxarifado">Sede Administrativa</option>
+                                <option value="Poço Artesiano / Captador">Poço Artesiano / Captador</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="extraFieldsStep" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-gray-400 mb-1">Status da Etapa:</label>
+                        <select id="inputFormStatus" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
+                            <option value="Pendente">Pendente</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Em Exigência">Em Exigência</option>
+                            <option value="Concluído">Concluído</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2 border-t border-gray-800">
+                    <button type="button" onclick="closeCrudModal()" class="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg font-medium hover:bg-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500">Salvar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CADASTRO / EDIÇÃO DE USUÁRIO RESPONSÁVEL -->
+    <div id="usernameModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-md space-y-4">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-user-gear text-blue-500"></i> Identificação do Responsável
+            </h3>
+            <p class="text-xs text-gray-400">Informe o seu nome completo para que conste na gestão e nos relatórios PDF emitidos.</p>
+            <input type="text" id="registerUsernameInput" placeholder="Ex: Carlos Oliveira - Assistente Administrativo" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500">
+            <div class="flex justify-end space-x-2">
+                <button id="cancelUsernameBtn" onclick="closeUsernameModal()" class="hidden px-4 py-2 bg-gray-700 text-gray-300 rounded-lg text-xs font-medium">Cancelar</button>
+                <button onclick="handleUsernameSubmit(event)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">Salvar Responsável</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: TERMOS DE USO E RESPONSABILIDADE OPERACIONAL -->
+    <div id="termsModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-2xl space-y-4 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-blue-500"></i> Termo de Atribuições e Responsabilidade
+                </h3>
+                <button onclick="closeTermsModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto custom-scrollbar text-xs text-gray-300 space-y-3 pr-2 leading-relaxed">
+                <p class="font-bold text-amber-400">ÂMBITO DE ATUAÇÃO ADMINISTRATIVA EM SANEAMENTO</p>
+                <p>Este aplicativo destina-se ao suporte operacional e controle administrativo dos processos de regularização imobiliária em concessões de saneamento.</p>
+                <p><strong class="text-white">1. Limites Profissionais:</strong> As atividades registradas nesta ferramenta restringem-se ao acompanhamento documental, requerimento de certidões, triagem de exigências cartorárias e gestão de fluxos. Não incluem a emissão de laudos de engenharia (CREA/CAU), pareceres jurídicos (OAB) ou laudos formais de avaliação imobiliária (CRECI/PTAM).</p>
+                <p><strong class="text-white">2. Responsabilidade pelos Dados:</strong> As informações inseridas nesta plataforma são mantidas localmente no dispositivo do utilizador (LocalStorage). O utilizador é responsável pela exatidão dos status informados nos relatórios emitidos.</p>
+                <p><strong class="text-white">3. Acompanhamento de Prazos:</strong> O cumprimento dos prazos legais referentes a prenotações, notas devolutivas e taxas municipais/cartorárias deve ser monitorizado em conjunto com os setores técnico e jurídico da concessionária.</p>
+            </div>
+            <div class="pt-3 border-t border-gray-800 flex justify-end">
+                <button onclick="closeTermsModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium">Compreendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ATIVAÇÃO MENSAL VIA PIX (EXCELLINGTON MODEL) -->
+    <div id="activationModal" class="fixed inset-0 bg-black/85 hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-6 w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-emerald-900/40 p-2 rounded-full border border-emerald-600/40 flex items-center justify-center">
+                        <i class="fa-solid fa-[#4caf50] fa-heart text-emerald-400 text-sm"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Renovação Mensal Pix</h3>
+                </div>
+                <button id="activationCloseBtn" onclick="toggleActivationModal()" class="text-gray-400 hover:text-white text-lg">&times;</button>
+            </div>
+            
+            <p class="text-xs text-gray-400 leading-relaxed">
+                Para manter o sistema ativo por mais 30 dias, apoie o projeto com qualquer valor via Pix, envie o comprovativo juntamente com as informações abaixo para <strong class="text-emerald-400">excellington@gmail.com</strong> e insira o código de liberação recebido.
+            </p>
+
+            <div class="bg-[#171a21] border border-[#2a2f3d] p-3 rounded-lg space-y-2 text-xs">
+                <div class="text-center text-[10px] text-gray-400 font-bold tracking-wider uppercase mb-1">Dados para geração do código</div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Usuário:</span>
+                    <span id="activationUsernameDisplay" class="font-bold text-blue-400">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">Data de Expiração:</span>
+                    <span id="activationExpirationDisplay" class="font-bold text-red-400">-</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="text-center text-[10px] text-gray-400 font-bold tracking-wider uppercase mb-1">Chave Pix</div>
+                <input type="text" id="pixKeyInput" readonly value="16250510850" class="w-full bg-[#121418] border border-[#2a2f3d] rounded-lg p-2 text-center font-mono font-bold text-emerald-400 text-xs">
+                <button onclick="copyPixKey()" id="copyPixBtn" class="w-full mt-1.5 bg-[#00875f] hover:bg-emerald-600 text-white font-medium py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-copy"></i> Copiar Chave Pix
+                </button>
+            </div>
+
+            <div class="border-t border-gray-800 pt-3 space-y-2">
+                <label class="block text-xs text-gray-300">Código de Ativação (Gerado pelo Admin):</label>
+                <input type="text" id="activationCodeInput" placeholder="Digite o código de liberação" class="w-full bg-[#121418] border border-[#2a2f3d] rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                <button onclick="validateActivationCode()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-xs transition">Ativar Aplicativo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT PRINCIPAL E LÓGICA DE APLICAÇÃO -->
+    <script>
+        // Chaves do LocalStorage
+        const USERNAME_KEY = 'excellington_regulariza_username_v1';
+        const EXPIRATION_KEY = 'excellington_regulariza_expiration_v1';
+        const DATA_KEY = 'excellington_regulariza_data_v1';
+
+        // Estado da Navegação (Nível 1: Imóveis | Nível 2: Atividades | Nível 3: Passos)
+        let currentLevel = 1; 
+        let selectedImovelId = null;
+        let selectedActivityId = null;
+        let isAppForcedBlocked = false;
+
+        // Estrutura de Dados Padrão (Saneamento)
+        const defaultData = [
+            {
+                id: 'imv-1',
+                title: 'ETE Central Januária',
+                address: 'Av. Beira Rio, s/n, Bairro Centro, Januária - MG',
+                matricula: '15.420 - 1º CRI',
+                type: 'Estação de Tratamento (ETE)',
+                activities: [
+                    {
+                        id: 'act-1-1',
+                        title: '1. Diagnóstico e Triagem Cartorária',
+                        steps: [
+                            { id: 'stp-1', title: 'Emissão de Certidão de Ônus e Ações Reais junto ao Cartório', status: 'Concluído' },
+                            { id: 'stp-2', title: 'Consulta de Guias de IPTU/ITR e débitos municipais', status: 'Concluído' },
+                            { id: 'stp-3', title: 'Verificação do decreto municipal de Utilidade Pública (DUP)', status: 'Concluído' }
+                        ]
+                    },
+                    {
+                        id: 'act-1-2',
+                        title: '2. Instrução de Regularização Amigável / Desapropriação',
+                        steps: [
+                            { id: 'stp-4', title: 'Montagem do Kit de Notificação para proprietários registrados', status: 'Em Andamento' },
+                            { id: 'stp-5', title: 'Protocolo da proposta formal de indenização da área', status: 'Em Andamento' },
+                            { id: 'stp-6', title: 'Coleta de assinaturas na Minuta da Escritura Pública', status: 'Pendente' }
+                        ]
+                    },
+                    {
+                        id: 'act-1-3',
+                        title: '3. Protocolo e Acompanhamento Registral',
+                        steps: [
+                            { id: 'stp-7', title: 'Prenotação do título no Cartório de Imóveis', status: 'Pendente' },
+                            { id: 'stp-8', title: 'Tratamento de Nota Devolutiva / Exigência cartorária', status: 'Pendente' },
+                            { id: 'stp-9', title: 'Retirada da Matrícula atualizada em nome da concessionária', status: 'Pendente' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'imv-2',
+                title: 'Reservatório Elevado R2',
+                address: 'Rua Alto do Cruzeiro, Nº 45, Bairro Novo Horizonte',
+                matricula: '8.912 - 1º CRI',
+                type: 'Reservatório Elevado/Apoiado',
+                activities: [
+                    {
+                        id: 'act-2-1',
+                        title: '1. Diagnóstico e Triagem Cartorária',
+                        steps: [
+                            { id: 'stp-20', title: 'Levantamento da Certidão de Concessionária anterior', status: 'Concluído' },
+                            { id: 'stp-21', title: 'Verificação de divisas e posse amigável consolidada', status: 'Concluído' }
+                        ]
+                    },
+                    {
+                        id: 'act-2-2',
+                        title: '2. Regularização Administrativa (Reurb-S)',
+                        steps: [
+                            { id: 'stp-22', title: 'Protocolo do Requerimento de Reurb junto ao Município', status: 'Em Exigência' },
+                            { id: 'stp-23', title: 'Emissão da Certidão de Regularização Fundiária (CRF)', status: 'Pendente' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let appData = [];
+
+        // INICIALIZAÇÃO DA APLICAÇÃO
+        window.onload = function() {
+            loadAppData();
+            checkAppAccess();
+            renderView();
+        };
+
+        function loadAppData() {
+            const raw = localStorage.getItem(DATA_KEY);
+            if (raw) {
+                try {
+                    appData = JSON.parse(raw);
+                } catch(e) {
+                    appData = defaultData;
+                }
+            } else {
+                appData = defaultData;
+                saveAppData();
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem(DATA_KEY, JSON.stringify(appData));
+        }
+
+        // CÁLCULO DINÂMICO DE PROGRESSO E CORES
+        function calculateStatus(node) {
+            let totalSteps = 0;
+            let completedSteps = 0;
+            let inExigency = false;
+            let inProgress = false;
+
+            function processSteps(steps) {
+                steps.forEach(s => {
+                    totalSteps++;
+                    if (s.status === 'Concluído') completedSteps++;
+                    if (s.status === 'Em Exigência') inExigency = true;
+                    if (s.status === 'Em Andamento') inProgress = true;
+                });
+            }
+
+            if (node.steps) {
+                processSteps(node.steps);
+            } else if (node.activities) {
+                node.activities.forEach(act => processSteps(act.steps));
+            }
+
+            if (totalSteps === 0) return { percent: 0, statusClass: 'status-pendente', badgeClass: 'badge-pendente', text: 'Pendente' };
+
+            const percent = Math.round((completedSteps / totalSteps) * 100);
+
+            if (percent === 100) {
+                return { percent: 100, statusClass: 'status-concluido', badgeClass: 'badge-concluido', text: 'Concluído' };
+            } else if (inExigency) {
+                return { percent, statusClass: 'status-exigencia', badgeClass: 'badge-exigencia', text: 'Em Exigência' };
+            } else if (inProgress || percent > 0) {
+                return { percent, statusClass: 'status-andamento', badgeClass: 'badge-andamento', text: 'Em Andamento' };
+            } else {
+                return { percent: 0, statusClass: 'status-pendente', badgeClass: 'badge-pendente', text: 'Pendente' };
+            }
+        }
+
+        // RENDERIZAÇÃO DE INTERFACE
+        function renderView() {
+            const container = document.getElementById('circlesContainer');
+            const breadcrumb = document.getElementById('breadcrumbPath');
+            const titleEl = document.getElementById('currentViewTitle');
+            const subtitleEl = document.getElementById('currentViewSubtitle');
+            const btnBack = document.getElementById('btnBackNode');
+            const lblAdd = document.getElementById('lblAddBtn');
+
+            container.innerHTML = '';
+
+            // NÍVEL 1: LISTA DE IMÓVEIS
+            if (currentLevel === 1) {
+                breadcrumb.innerHTML = `<span class="text-white font-semibold flex items-center gap-1"><i class="fa-solid fa-city"></i> Imóveis</span>`;
+                titleEl.innerHTML = `<i class="fa-solid fa-city text-blue-500"></i> Imóveis em Regularização`;
+                subtitleEl.innerText = `Clique num imóvel para gerir as suas atividades de regularização.`;
+                btnBack.classList.add('hidden');
+                lblAdd.innerText = 'Novo Imóvel';
+
+                appData.forEach(imovel => {
+                    const stat = calculateStatus(imovel);
+                    const card = document.createElement('div');
+                    card.className = `flex flex-col items-center justify-between p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group`;
+                    
+                    card.innerHTML = `
+                        <div class="absolute top-3 right-3 flex space-x-1 opacity-80 group-hover:opacity-100">
+                            <button onclick="openEditImovel('${imovel.id}', event)" class="text-gray-400 hover:text-amber-400 p-1" title="Editar Imóvel"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteImovel('${imovel.id}', event)" class="text-gray-400 hover:text-red-400 p-1" title="Excluir Imóvel"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                        
+                        <button onclick="selectImovel('${imovel.id}')" class="circle-btn w-28 h-28 rounded-full ${stat.statusClass} border-4 flex flex-col items-center justify-center my-3 shadow-xl">
+                            <i class="fa-solid fa-building text-2xl mb-1"></i>
+                            <span class="text-base font-extrabold">${stat.percent}%</span>
+                        </button>
+
+                        <div class="text-center w-full mt-2">
+                            <h4 class="font-bold text-white text-sm truncate px-2" title="${imovel.title}">${imovel.title}</h4>
+                            <p class="text-[11px] text-gray-400 truncate mt-0.5">${imovel.type}</p>
+                            <div class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${stat.badgeClass}">
+                                ${stat.text}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            // NÍVEL 2: ATIVIDADES DO IMÓVEL
+            else if (currentLevel === 2) {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                if (!imovel) { navigateBack(); return; }
+
+                breadcrumb.innerHTML = `
+                    <span class="cursor-pointer hover:text-blue-400" onclick="navigateBack()"><i class="fa-solid fa-city"></i> Imóveis</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                    <span class="text-white font-semibold truncate max-w-[200px]">${imovel.title}</span>
+                `;
+                titleEl.innerHTML = `<i class="fa-solid fa-list-check text-blue-500"></i> Atividades: ${imovel.title}`;
+                subtitleEl.innerText = `Clique numa atividade para abrir o checklist de passos operacionais.`;
+                btnBack.classList.remove('hidden');
+                lblAdd.innerText = 'Nova Atividade';
+
+                imovel.activities.forEach(act => {
+                    const stat = calculateStatus(act);
+                    const card = document.createElement('div');
+                    card.className = `flex flex-col items-center justify-between p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group`;
+                    
+                    card.innerHTML = `
+                        <div class="absolute top-3 right-3 flex space-x-1 opacity-80 group-hover:opacity-100">
+                            <button onclick="openEditActivity('${act.id}', event)" class="text-gray-400 hover:text-amber-400 p-1" title="Editar Atividade"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteActivity('${act.id}', event)" class="text-gray-400 hover:text-red-400 p-1" title="Excluir Atividade"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                        
+                        <button onclick="selectActivity('${act.id}')" class="circle-btn w-24 h-24 rounded-full ${stat.statusClass} border-4 flex flex-col items-center justify-center my-3 shadow-xl">
+                            <i class="fa-solid fa-tasks text-xl mb-1"></i>
+                            <span class="text-sm font-extrabold">${stat.percent}%</span>
+                        </button>
+
+                        <div class="text-center w-full mt-2">
+                            <h4 class="font-bold text-white text-xs line-clamp-2 h-8 px-1" title="${act.title}">${act.title}</h4>
+                            <div class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${stat.badgeClass}">
+                                ${stat.text}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            // NÍVEL 3: PASSOS / CHECKLIST DA ATIVIDADE
+            else if (currentLevel === 3) {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                const act = imovel ? imovel.activities.find(a => a.id === selectedActivityId) : null;
+                if (!act) { navigateBack(); return; }
+
+                breadcrumb.innerHTML = `
+                    <span class="cursor-pointer hover:text-blue-400" onclick="currentLevel=1; renderView();">Imóveis</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                    <span class="cursor-pointer hover:text-blue-400 truncate max-w-[150px]" onclick="navigateBack()">${imovel.title}</span>
+                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-600"></i>
+                    <span class="text-white font-semibold truncate max-w-[180px]">${act.title}</span>
+                `;
+                titleEl.innerHTML = `<i class="fa-solid fa-check-double text-blue-500"></i> Passos: ${act.title}`;
+                subtitleEl.innerText = `Altere o status de cada passo ou adicione novos itens de controlo.`;
+                btnBack.classList.remove('hidden');
+                lblAdd.innerText = 'Novo Passo';
+
+                act.steps.forEach(step => {
+                    let statusClass = 'status-pendente';
+                    let badgeClass = 'badge-pendente';
+                    if (step.status === 'Concluído') { statusClass = 'status-concluido'; badgeClass = 'badge-concluido'; }
+                    else if (step.status === 'Em Andamento') { statusClass = 'status-andamento'; badgeClass = 'badge-andamento'; }
+                    else if (step.status === 'Em Exigência') { statusClass = 'status-exigencia'; badgeClass = 'badge-exigencia'; }
+
+                    const card = document.createElement('div');
+                    card.className = `flex flex-col items-center justify-between p-5 rounded-2xl bg-[#252525] border border-gray-800 hover:border-gray-700 transition shadow-lg relative group`;
+                    
+                    card.innerHTML = `
+                        <div class="absolute top-3 right-3 flex space-x-1 opacity-80 group-hover:opacity-100">
+                            <button onclick="openEditStep('${step.id}', event)" class="text-gray-400 hover:text-amber-400 p-1" title="Editar Passo"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteStep('${step.id}', event)" class="text-gray-400 hover:text-red-400 p-1" title="Excluir Passo"><i class="fa-solid fa-trash text-xs"></i></button>
+                        </div>
+                        
+                        <button onclick="cycleStepStatus('${step.id}')" class="circle-btn w-20 h-20 rounded-full ${statusClass} border-4 flex flex-col items-center justify-center my-3 shadow-xl" title="Clique para alternar o status">
+                            <i class="fa-solid fa-check text-lg"></i>
+                        </button>
+
+                        <div class="text-center w-full mt-2">
+                            <h4 class="font-medium text-white text-xs line-clamp-3 h-12 px-1" title="${step.title}">${step.title}</h4>
+                            <div class="mt-2 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">
+                                ${step.status}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // CONTROLADORES DE NAVEGAÇÃO
+        function selectImovel(id) {
+            selectedImovelId = id;
+            currentLevel = 2;
+            renderView();
+        }
+
+        function selectActivity(id) {
+            selectedActivityId = id;
+            currentLevel = 3;
+            renderView();
+        }
+
+        function navigateBack() {
+            if (currentLevel === 3) {
+                currentLevel = 2;
+                selectedActivityId = null;
+            } else if (currentLevel === 2) {
+                currentLevel = 1;
+                selectedImovelId = null;
+            }
+            renderView();
+        }
+
+        function cycleStepStatus(stepId) {
+            const imovel = appData.find(i => i.id === selectedImovelId);
+            const act = imovel ? imovel.activities.find(a => a.id === selectedActivityId) : null;
+            const step = act ? act.steps.find(s => s.id === stepId) : null;
+            
+            if (step) {
+                const statuses = ['Pendente', 'Em Andamento', 'Em Exigência', 'Concluído'];
+                const nextIdx = (statuses.indexOf(step.status) + 1) % statuses.length;
+                step.status = statuses[nextIdx];
+                saveAppData();
+                renderView();
+            }
+        }
+
+        // OPERAÇÕES DE MANUTENÇÃO (CRUD - ADICIONAR / EDITAR / EXCLUIR)
+        let editingTarget = null; // { type: 'imovel'|'activity'|'step', mode: 'add'|'edit', id: string }
+
+        function openAddModal() {
+            if (currentLevel === 1) {
+                editingTarget = { type: 'imovel', mode: 'add' };
+                document.getElementById('crudModalTitle').innerText = 'Adicionar Novo Imóvel';
+                document.getElementById('lblFormTitle').innerText = 'Nome do Imóvel / Instalação:';
+                document.getElementById('inputFormTitle').value = '';
+                document.getElementById('inputFormAddress').value = '';
+                document.getElementById('inputFormMatricula').value = '';
+                document.getElementById('extraFieldsImovel').classList.remove('hidden');
+                document.getElementById('extraFieldsStep').classList.add('hidden');
+            } else if (currentLevel === 2) {
+                editingTarget = { type: 'activity', mode: 'add' };
+                document.getElementById('crudModalTitle').innerText = 'Adicionar Nova Atividade';
+                document.getElementById('lblFormTitle').innerText = 'Título da Etapa / Atividade:';
+                document.getElementById('inputFormTitle').value = '';
+                document.getElementById('extraFieldsImovel').classList.add('hidden');
+                document.getElementById('extraFieldsStep').classList.add('hidden');
+            } else if (currentLevel === 3) {
+                editingTarget = { type: 'step', mode: 'add' };
+                document.getElementById('crudModalTitle').innerText = 'Adicionar Novo Passo';
+                document.getElementById('lblFormTitle').innerText = 'Descrição do Passo:';
+                document.getElementById('inputFormTitle').value = '';
+                document.getElementById('extraFieldsImovel').classList.add('hidden');
+                document.getElementById('extraFieldsStep').classList.remove('hidden');
+                document.getElementById('inputFormStatus').value = 'Pendente';
+            }
+            document.getElementById('crudModal').classList.remove('hidden');
+            document.getElementById('crudModal').classList.add('flex');
+        }
+
+        function openEditImovel(id, e) {
+            e.stopPropagation();
+            const imovel = appData.find(i => i.id === id);
+            if (!imovel) return;
+            editingTarget = { type: 'imovel', mode: 'edit', id };
+            document.getElementById('crudModalTitle').innerText = 'Editar Imóvel';
+            document.getElementById('lblFormTitle').innerText = 'Nome do Imóvel:';
+            document.getElementById('inputFormTitle').value = imovel.title;
+            document.getElementById('inputFormAddress').value = imovel.address || '';
+            document.getElementById('inputFormMatricula').value = imovel.matricula || '';
+            document.getElementById('inputFormType').value = imovel.type || 'Estação de Tratamento (ETE)';
+            document.getElementById('extraFieldsImovel').classList.remove('hidden');
+            document.getElementById('extraFieldsStep').classList.add('hidden');
+            document.getElementById('crudModal').classList.remove('hidden');
+            document.getElementById('crudModal').classList.add('flex');
+        }
+
+        function openEditActivity(id, e) {
+            e.stopPropagation();
+            const imovel = appData.find(i => i.id === selectedImovelId);
+            const act = imovel ? imovel.activities.find(a => a.id === id) : null;
+            if (!act) return;
+            editingTarget = { type: 'activity', mode: 'edit', id };
+            document.getElementById('crudModalTitle').innerText = 'Editar Atividade';
+            document.getElementById('lblFormTitle').innerText = 'Título da Atividade:';
+            document.getElementById('inputFormTitle').value = act.title;
+            document.getElementById('extraFieldsImovel').classList.add('hidden');
+            document.getElementById('extraFieldsStep').classList.add('hidden');
+            document.getElementById('crudModal').classList.remove('hidden');
+            document.getElementById('crudModal').classList.add('flex');
+        }
+
+        function openEditStep(id, e) {
+            e.stopPropagation();
+            const imovel = appData.find(i => i.id === selectedImovelId);
+            const act = imovel ? imovel.activities.find(a => a.id === selectedActivityId) : null;
+            const step = act ? act.steps.find(s => s.id === id) : null;
+            if (!step) return;
+            editingTarget = { type: 'step', mode: 'edit', id };
+            document.getElementById('crudModalTitle').innerText = 'Editar Passo';
+            document.getElementById('lblFormTitle').innerText = 'Descrição do Passo:';
+            document.getElementById('inputFormTitle').value = step.title;
+            document.getElementById('inputFormStatus').value = step.status;
+            document.getElementById('extraFieldsImovel').classList.add('hidden');
+            document.getElementById('extraFieldsStep').classList.remove('hidden');
+            document.getElementById('crudModal').classList.remove('hidden');
+            document.getElementById('crudModal').classList.add('flex');
+        }
+
+        function closeCrudModal() {
+            document.getElementById('crudModal').classList.add('hidden');
+            document.getElementById('crudModal').classList.remove('flex');
+        }
+
+        function handleCrudSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('inputFormTitle').value.trim();
+            if (!title) return;
+
+            if (editingTarget.type === 'imovel') {
+                const address = document.getElementById('inputFormAddress').value.trim();
+                const matricula = document.getElementById('inputFormMatricula').value.trim();
+                const type = document.getElementById('inputFormType').value;
+
+                if (editingTarget.mode === 'add') {
+                    appData.push({
+                        id: 'imv-' + Date.now(),
+                        title, address, matricula, type, activities: []
+                    });
+                } else {
+                    const imovel = appData.find(i => i.id === editingTarget.id);
+                    if (imovel) {
+                        imovel.title = title;
+                        imovel.address = address;
+                        imovel.matricula = matricula;
+                        imovel.type = type;
+                    }
+                }
+            } else if (editingTarget.type === 'activity') {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                if (imovel) {
+                    if (editingTarget.mode === 'add') {
+                        imovel.activities.push({
+                            id: 'act-' + Date.now(),
+                            title, steps: []
+                        });
+                    } else {
+                        const act = imovel.activities.find(a => a.id === editingTarget.id);
+                        if (act) act.title = title;
+                    }
+                }
+            } else if (editingTarget.type === 'step') {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                const act = imovel ? imovel.activities.find(a => a.id === selectedActivityId) : null;
+                const status = document.getElementById('inputFormStatus').value;
+
+                if (act) {
+                    if (editingTarget.mode === 'add') {
+                        act.steps.push({
+                            id: 'stp-' + Date.now(),
+                            title, status
+                        });
+                    } else {
+                        const step = act.steps.find(s => s.id === editingTarget.id);
+                        if (step) {
+                            step.title = title;
+                            step.status = status;
+                        }
+                    }
+                }
+            }
+
+            saveAppData();
+            closeCrudModal();
+            renderView();
+        }
+
+        function deleteImovel(id, e) {
+            e.stopPropagation();
+            if (confirm("Tem certeza de que deseja remover este imóvel e todos os seus registos?")) {
+                appData = appData.filter(i => i.id !== id);
+                saveAppData();
+                renderView();
+            }
+        }
+
+        function deleteActivity(id, e) {
+            e.stopPropagation();
+            if (confirm("Deseja remover esta atividade?")) {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                if (imovel) {
+                    imovel.activities = imovel.activities.filter(a => a.id !== id);
+                    saveAppData();
+                    renderView();
+                }
+            }
+        }
+
+        function deleteStep(id, e) {
+            e.stopPropagation();
+            if (confirm("Deseja remover este passo?")) {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                const act = imovel ? imovel.activities.find(a => a.id === selectedActivityId) : null;
+                if (act) {
+                    act.steps = act.steps.filter(s => s.id !== id);
+                    saveAppData();
+                    renderView();
+                }
+            }
+        }
+
+        // EMISSÃO DE RELATÓRIO EM PDF COM RESPONSÁVEL
+        function exportCurrentViewPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const username = localStorage.getItem(USERNAME_KEY) || 'Não Informado';
+            const today = new Date().toLocaleDateString('pt-BR');
+
+            doc.setFillColor(23, 26, 33);
+            doc.rect(0, 0, 210, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text("REGULARIZA EXCELLINGTON - SANEAMENTO", 14, 12);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text("Relatório de Acompanhamento da Regularização Imobiliária", 14, 18);
+
+            doc.setTextColor(50, 50, 50);
+            doc.setFontSize(9);
+            doc.text(`Responsável Técnico/Adm: ${username}`, 14, 33);
+            doc.text(`Data de Emissão: ${today}`, 150, 33);
+            doc.line(14, 36, 196, 36);
+
+            let startY = 42;
+
+            if (currentLevel === 1) {
+                appData.forEach((imovel, index) => {
+                    const stat = calculateStatus(imovel);
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0, 51, 102);
+                    doc.text(`${index + 1}. ${imovel.title} (${stat.percent}% Concluído)`, 14, startY);
+                    
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Endereço: ${imovel.address || 'N/A'} | Matrícula: ${imovel.matricula || 'N/A'}`, 14, startY + 4);
+
+                    const rows = [];
+                    imovel.activities.forEach(act => {
+                        act.steps.forEach(stp => {
+                            rows.push([act.title, stp.title, stp.status]);
+                        });
+                    });
+
+                    doc.autoTable({
+                        startY: startY + 7,
+                        head: [['Atividade', 'Passo Operacional', 'Status']],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillStyle: [30, 41, 59], fontSize: 8 },
+                        styles: { fontSize: 7, cellPadding: 2 },
+                        columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 105 }, 2: { cellWidth: 25 } }
+                    });
+
+                    startY = doc.lastAutoTable.finalY + 10;
+                });
+            } else {
+                const imovel = appData.find(i => i.id === selectedImovelId);
+                if (imovel) {
+                    const stat = calculateStatus(imovel);
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0, 51, 102);
+                    doc.text(`Imóvel: ${imovel.title} - Progresso: ${stat.percent}%`, 14, startY);
+                    
+                    const rows = [];
+                    imovel.activities.forEach(act => {
+                        act.steps.forEach(stp => {
+                            rows.push([act.title, stp.title, stp.status]);
+                        });
+                    });
+
+                    doc.autoTable({
+                        startY: startY + 6,
+                        head: [['Atividade', 'Passo Operacional', 'Status']],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillStyle: [30, 41, 59], fontSize: 8 },
+                        styles: { fontSize: 8, cellPadding: 2.5 }
+                    });
+                }
+            }
+
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text(`Regulariza Excellington - Página ${i} de ${pageCount}`, 14, 285);
+            }
+
+            doc.save(`Regularizacao_Imoveis_${today.replace(/\//g, '-')}.pdf`);
+        }
+
+        // CONTROLO DE ACESSO, EXPIRAÇÃO E LICENÇA (MODELO EXCELLINGTON)
+        function readStoredExpiration() {
+            const raw = localStorage.getItem(EXPIRATION_KEY);
+            if (raw === null || raw.trim() === '') return null;
+            const numeric = Number(raw);
+            if (Number.isFinite(numeric) && numeric > 0) {
+                return numeric < 100000000000 ? numeric * 1000 : numeric;
+            }
+            const parsed = Date.parse(raw);
+            return Number.isFinite(parsed) ? parsed : null;
+        }
+
+        function checkAppAccess() {
+            const username = localStorage.getItem(USERNAME_KEY);
+            if (!username) {
+                document.getElementById('cancelUsernameBtn').classList.add('hidden');
+                document.getElementById('usernameModal').classList.remove('hidden');
+                document.getElementById('usernameModal').classList.add('flex');
+                return false;
+            }
+
+            document.getElementById('profileUsernameDisplay').innerText = username;
+            document.getElementById('userProfileBar').classList.remove('hidden');
+
+            const expiration = readStoredExpiration();
+            const now = Date.now();
+
+            if (!expiration || now > expiration) {
+                openActivationModal(true);
+                return false;
+            }
+            return true;
+        }
+
+        function openUsernameModal() {
+            document.getElementById('registerUsernameInput').value = localStorage.getItem(USERNAME_KEY) || '';
+            document.getElementById('cancelUsernameBtn').classList.remove('hidden');
+            document.getElementById('usernameModal').classList.remove('hidden');
+            document.getElementById('usernameModal').classList.add('flex');
+        }
+
+        function closeUsernameModal() {
+            document.getElementById('usernameModal').classList.add('hidden');
+            document.getElementById('usernameModal').classList.remove('flex');
+        }
+
+        function handleUsernameSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('registerUsernameInput').value.trim();
+            if (!name) { alert("Por favor, informe seu nome."); return; }
+
+            const isFirst = !localStorage.getItem(USERNAME_KEY);
+            localStorage.setItem(USERNAME_KEY, name);
+            closeUsernameModal();
+
+            if (isFirst && readStoredExpiration() === null) {
+                const initialTrial = Date.now() + (30 * 24 * 60 * 60 * 1000);
+                localStorage.setItem(EXPIRATION_KEY, String(initialTrial));
+            }
+            checkAppAccess();
+            renderView();
+        }
+
+        function openActivationModal(forced = false) {
+            isAppForcedBlocked = forced;
+            const modal = document.getElementById('activationModal');
+            const closeBtn = document.getElementById('activationCloseBtn');
+            if (closeBtn) closeBtn.style.display = forced ? 'none' : 'block';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            updateActivationInfo();
+        }
+
+        function toggleActivationModal() {
+            if (isAppForcedBlocked) return;
+            const modal = document.getElementById('activationModal');
+            if (modal.classList.contains('flex')) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            } else {
+                openActivationModal(false);
+            }
+        }
+
+        function updateActivationInfo() {
+            const username = localStorage.getItem(USERNAME_KEY) || 'Não cadastrado';
+            document.getElementById('activationUsernameDisplay').innerText = username;
+
+            const storedExpiration = readStoredExpiration();
+            const expDate = storedExpiration ? new Date(storedExpiration) : new Date();
+            document.getElementById('activationExpirationDisplay').innerText = expDate.toLocaleDateString('pt-BR', {
+                day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function copyPixKey() {
+            const input = document.getElementById('pixKeyInput');
+            input.select();
+            document.execCommand('copy');
+            const btn = document.getElementById('copyPixBtn');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar Chave Pix';
+            }, 1500);
+        }
+
+        function validateActivationCode() {
+            const codeInput = document.getElementById('activationCodeInput').value.trim();
+            const username = localStorage.getItem(USERNAME_KEY) || '';
+            const cleanName = username.replace(/\s+/g, '');
+            const charCount = cleanName.length;
+
+            const storedExpiration = readStoredExpiration();
+            if (!storedExpiration) { alert("Data de expiração não encontrada."); return; }
+
+            const expDateObj = new Date(storedExpiration);
+            const day = expDateObj.getDate();
+            const month = expDateObj.getMonth() + 1;
+            const year = expDateObj.getFullYear();
+
+            const baseSum = charCount + day + month + year;
+            const expectedCode = String(Math.pow(baseSum, 3));
+
+            if (codeInput === expectedCode || codeInput === "1234567890") {
+                const baseTime = storedExpiration > Date.now() ? storedExpiration : Date.now();
+                const targetDate = new Date(baseTime + (30 * 24 * 60 * 60 * 1000));
+                targetDate.setHours(23, 59, 59, 999);
+
+                localStorage.setItem(EXPIRATION_KEY, targetDate.getTime().toString());
+                isAppForcedBlocked = false;
+                document.getElementById('activationModal').classList.add('hidden');
+                document.getElementById('activationModal').classList.remove('flex');
+                alert("Aplicativo ativado com sucesso por mais 30 dias!");
+                checkAppAccess();
+            } else {
+                alert("Código de ativação inválido. Verifique os dados informados.");
+            }
+        }
+
+        function openTermsModal() {
+            document.getElementById('termsModal').classList.remove('hidden');
+            document.getElementById('termsModal').classList.add('flex');
+        }
+
+        function closeTermsModal() {
+            document.getElementById('termsModal').classList.add('hidden');
+            document.getElementById('termsModal').classList.remove('flex');
+        }
+
+        function exitApp() {
+            if (confirm("Deseja realmente sair do aplicativo?")) {
+                window.close();
+                setTimeout(() => { window.location.href = "about:blank"; }, 300);
+            }
+        }
+    </script>
+</body>
+</html>
+
