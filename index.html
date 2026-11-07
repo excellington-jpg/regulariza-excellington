@@ -50,7 +50,7 @@
 </head>
 <body class="min-h-screen flex flex-col w-full overflow-x-hidden">
 
-    <!-- BARRA SUPERIOR DE NAVEGAÇÃO RESPONSIVA -->
+    <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
     <header class="bg-[#1e1e1e] border-b border-gray-800 sticky top-0 z-30 shadow-lg w-full">
         <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex flex-wrap justify-between items-center gap-2">
             <div class="flex items-center space-x-2 sm:space-x-3">
@@ -88,21 +88,109 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col space-y-4 sm:space-y-6 overflow-x-hidden">
 
+        <!-- PAINEL RESUMO EXECUTIVO (MÉTRICAS E DESEMPENHO) -->
+        <section class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-4 w-full shadow-lg">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 pb-3 border-b border-gray-800 gap-2">
+                <div>
+                    <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-blue-400"></i> Painel Resumo e Desempenho Operacional
+                    </h3>
+                    <p class="text-[11px] text-gray-400">Panorama consolidado do avanço dos processos sob responsabilidade do assistente.</p>
+                </div>
+                <div class="w-full md:w-auto flex items-center bg-[#171a21] border border-[#2a2f3d] px-3 py-1.5 rounded-lg justify-between md:justify-start gap-3">
+                    <span class="text-[11px] text-gray-400 font-medium">Índice de Eficiência:</span>
+                    <div class="flex items-center gap-2">
+                        <span id="statPerformancePercent" class="text-sm font-extrabold text-emerald-400">0%</span>
+                        <div class="w-20 bg-gray-800 rounded-full h-2 overflow-hidden border border-gray-700">
+                            <div id="statPerformanceBar" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GRID DE INDICADORES CARDS -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+                <div class="bg-[#252525] border border-gray-800 p-2.5 sm:p-3 rounded-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase">Total Imóveis</p>
+                        <h4 id="statTotalImoveis" class="text-lg font-bold text-white mt-0.5">0</h4>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-blue-900/40 border border-blue-700/50 flex items-center justify-center text-blue-400">
+                        <i class="fa-solid fa-city text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="bg-[#252525] border border-gray-800 p-2.5 sm:p-3 rounded-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase">Pendentes</p>
+                        <h4 id="statPendentes" class="text-lg font-bold text-red-400 mt-0.5">0</h4>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-red-900/40 border border-red-700/50 flex items-center justify-center text-red-400">
+                        <i class="fa-solid fa-clock text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="bg-[#252525] border border-gray-800 p-2.5 sm:p-3 rounded-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase">Em Andamento</p>
+                        <h4 id="statAndamento" class="text-lg font-bold text-amber-400 mt-0.5">0</h4>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-amber-900/40 border border-amber-700/50 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-spinner text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="bg-[#252525] border border-gray-800 p-2.5 sm:p-3 rounded-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase">Em Exigência</p>
+                        <h4 id="statExigencia" class="text-lg font-bold text-purple-400 mt-0.5">0</h4>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-purple-900/40 border border-purple-700/50 flex items-center justify-center text-purple-400">
+                        <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="bg-[#252525] border border-gray-800 p-2.5 sm:p-3 rounded-lg flex items-center justify-between col-span-2 sm:col-span-1">
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase">Concluídos</p>
+                        <h4 id="statConcluidos" class="text-lg font-bold text-emerald-400 mt-0.5">0</h4>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-emerald-900/40 border border-emerald-700/50 flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-circle-check text-xs"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- NAVEGAÇÃO BREADCRUMB / BOTOEIRA RESPONSIVA -->
         <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-[#1e1e1e] border border-gray-800 p-3 sm:p-4 rounded-xl gap-3 w-full">
             <div class="flex items-center space-x-2 text-xs sm:text-sm text-gray-400 flex-wrap overflow-hidden" id="breadcrumbPath">
                 <!-- Preenchido via JS -->
             </div>
             
-            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end flex-wrap gap-y-2">
+            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end flex-wrap gap-y-2 relative">
                 <button id="btnBackNode" onclick="navigateBack()" class="hidden flex-1 sm:flex-none bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg border border-gray-700 items-center justify-center space-x-1.5 transition">
                     <i class="fa-solid fa-arrow-left"></i>
                     <span>Voltar</span>
                 </button>
-                <button id="btnExportPDF" onclick="exportCurrentViewPDF()" class="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-1.5 transition shadow">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    <span>Relatório PDF</span>
-                </button>
+                
+                <!-- DROPDOWN DE OPÇÕES DE RELATÓRIO PDF -->
+                <div class="relative flex-1 sm:flex-none">
+                    <button onclick="togglePdfDropdown(event)" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-1.5 transition shadow">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>Relatório PDF</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+                    </button>
+                    <div id="pdfDropdownMenu" class="hidden absolute right-0 mt-1 w-48 bg-[#252525] border border-gray-700 rounded-lg shadow-2xl z-40 py-1 text-xs">
+                        <button onclick="exportCurrentViewPDF('open')" class="w-full text-left px-3 py-2 text-gray-200 hover:bg-gray-700 flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-blue-400"></i> Abrir em Nova Aba
+                        </button>
+                        <button onclick="exportCurrentViewPDF('download')" class="w-full text-left px-3 py-2 text-gray-200 hover:bg-gray-700 flex items-center gap-2">
+                            <i class="fa-solid fa-download text-emerald-400"></i> Baixar Arquivo PDF
+                        </button>
+                    </div>
+                </div>
+
                 <button id="btnAddNode" onclick="openAddModal()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-1.5 transition shadow">
                     <i class="fa-solid fa-plus"></i>
                     <span id="lblAddBtn">Novo Imóvel</span>
@@ -128,7 +216,7 @@
                 </div>
             </div>
 
-            <!-- CONTAINER DOS CÍRCULOS (GRID RESPONSIVO) -->
+            <!-- CONTAINER DOS CÍRCULOS -->
             <div id="circlesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 my-auto py-2 sm:py-4 w-full">
                 <!-- Círculos injetados via JS -->
             </div>
@@ -166,13 +254,14 @@
                             <input type="text" id="inputFormMatricula" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
                         </div>
                         <div>
-                            <label class="block text-gray-400 mb-1">Tipo de Unidade:</label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-gray-400">Tipo de Unidade:</label>
+                                <button type="button" onclick="openTypesConfigModal()" class="text-blue-400 hover:underline text-[10px] flex items-center gap-1">
+                                    <i class="fa-solid fa-gear"></i> Gerenciar
+                                </button>
+                            </div>
                             <select id="inputFormType" class="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg p-2.5 text-white">
-                                <option value="Estação de Tratamento (ETE)">Estação de Tratamento (ETE)</option>
-                                <option value="Reservatório Elevado/Apoiado">Reservatório Elevado/Apoiado</option>
-                                <option value="Estação Elevatória (EEE)">Estação Elevatória (EEE)</option>
-                                <option value="Sede Administrativa / Almoxarifado">Sede Administrativa</option>
-                                <option value="Poço Artesiano / Captador">Poço Artesiano / Captador</option>
+                                <!-- Opções injetadas via JS -->
                             </select>
                         </div>
                     </div>
@@ -195,6 +284,33 @@
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500">Salvar Registro</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: GERENCIAMENTO DE TIPOS DE UNIDADE -->
+    <div id="typesConfigModal" class="fixed inset-0 bg-black/85 hidden items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-blue-500"></i> Tipos de Unidades
+                </h3>
+                <button onclick="closeTypesConfigModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <!-- Adicionar Tipo -->
+            <div class="flex gap-2">
+                <input type="text" id="newTypeInput" placeholder="Ex: Tanque Suctor, Elevatória EEE" class="flex-1 bg-[#2a2a2a] border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                <button onclick="addNewUnitType()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shrink-0">Adicionar</button>
+            </div>
+
+            <!-- Lista de Tipos Existentes -->
+            <div id="unitTypesList" class="flex-1 overflow-y-auto custom-scrollbar space-y-1.5 pr-1 my-2">
+                <!-- Injetado via JS -->
+            </div>
+
+            <div class="pt-3 border-t border-gray-800 flex justify-end">
+                <button onclick="closeTypesConfigModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-xs font-medium">Concluir</button>
+            </div>
         </div>
     </div>
 
@@ -235,7 +351,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ATIVAÇÃO MENSAL VIA PIX (EXCELLINGTON MODEL) -->
+    <!-- MODAL: ATIVAÇÃO MENSAL VIA PIX -->
     <div id="activationModal" class="fixed inset-0 bg-black/85 hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -285,11 +401,20 @@
         const USERNAME_KEY = 'excellington_regulariza_username_v1';
         const EXPIRATION_KEY = 'excellington_regulariza_expiration_v1';
         const DATA_KEY = 'excellington_regulariza_data_v1';
+        const TYPES_KEY = 'excellington_regulariza_types_v1';
 
         let currentLevel = 1; 
         let selectedImovelId = null;
         let selectedActivityId = null;
         let isAppForcedBlocked = false;
+
+        const defaultTypes = [
+            'Estação de Tratamento (ETE)',
+            'Reservatório Elevado/Apoiado',
+            'Estação Elevatória (EEE)',
+            'Sede Administrativa / Almoxarifado',
+            'Poço Artesiano / Captador'
+        ];
 
         const defaultData = [
             {
@@ -356,21 +481,52 @@
         ];
 
         let appData = [];
+        let unitTypes = [];
 
         window.onload = function() {
+            loadUnitTypes();
             loadAppData();
             checkAppAccess();
             renderView();
+            
+            document.addEventListener('click', function(e) {
+                const pdfMenu = document.getElementById('pdfDropdownMenu');
+                if (pdfMenu && !pdfMenu.contains(e.target) && !e.target.closest('button[onclick*="togglePdfDropdown"]')) {
+                    pdfMenu.classList.add('hidden');
+                }
+            });
         };
+
+        function loadUnitTypes() {
+            const raw = localStorage.getItem(TYPES_KEY);
+            if (raw) {
+                try { unitTypes = JSON.parse(raw); } catch(e) { unitTypes = [...defaultTypes]; }
+            } else {
+                unitTypes = [...defaultTypes];
+                saveUnitTypes();
+            }
+        }
+
+        function saveUnitTypes() {
+            localStorage.setItem(TYPES_KEY, JSON.stringify(unitTypes));
+        }
+
+        function populateUnitTypesSelect() {
+            const select = document.getElementById('inputFormType');
+            if (!select) return;
+            select.innerHTML = '';
+            unitTypes.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.innerText = t;
+                select.appendChild(opt);
+            });
+        }
 
         function loadAppData() {
             const raw = localStorage.getItem(DATA_KEY);
             if (raw) {
-                try {
-                    appData = JSON.parse(raw);
-                } catch(e) {
-                    appData = defaultData;
-                }
+                try { appData = JSON.parse(raw); } catch(e) { appData = defaultData; }
             } else {
                 appData = defaultData;
                 saveAppData();
@@ -379,6 +535,7 @@
 
         function saveAppData() {
             localStorage.setItem(DATA_KEY, JSON.stringify(appData));
+            updateExecutiveDashboard();
         }
 
         function calculateStatus(node) {
@@ -417,7 +574,39 @@
             }
         }
 
+        // ATUALIZAÇÃO DO PAINEL RESUMO EXECUTIVO
+        function updateExecutiveDashboard() {
+            let totalImoveis = appData.length;
+            let pendentes = 0;
+            let andamento = 0;
+            let exigencia = 0;
+            let concluidos = 0;
+            let sumPercentages = 0;
+
+            appData.forEach(imv => {
+                const stat = calculateStatus(imv);
+                sumPercentages += stat.percent;
+                if (stat.text === 'Concluído') concluidos++;
+                else if (stat.text === 'Em Exigência') exigencia++;
+                else if (stat.text === 'Em Andamento') andamento++;
+                else pendentes++;
+            });
+
+            const avgPerformance = totalImoveis > 0 ? Math.round(sumPercentages / totalImoveis) : 0;
+
+            document.getElementById('statTotalImoveis').innerText = totalImoveis;
+            document.getElementById('statPendentes').innerText = pendentes;
+            document.getElementById('statAndamento').innerText = andamento;
+            document.getElementById('statExigencia').innerText = exigencia;
+            document.getElementById('statConcluidos').innerText = concluidos;
+
+            document.getElementById('statPerformancePercent').innerText = `${avgPerformance}%`;
+            document.getElementById('statPerformanceBar').style.width = `${avgPerformance}%`;
+        }
+
         function renderView() {
+            updateExecutiveDashboard();
+
             const container = document.getElementById('circlesContainer');
             const breadcrumb = document.getElementById('breadcrumbPath');
             const titleEl = document.getElementById('currentViewTitle');
@@ -592,9 +781,70 @@
             }
         }
 
+        // GERENCIAMENTO DE TIPOS DE UNIDADE
+        function openTypesConfigModal() {
+            renderUnitTypesList();
+            document.getElementById('typesConfigModal').classList.remove('hidden');
+            document.getElementById('typesConfigModal').classList.add('flex');
+        }
+
+        function closeTypesConfigModal() {
+            document.getElementById('typesConfigModal').classList.add('hidden');
+            document.getElementById('typesConfigModal').classList.remove('flex');
+            populateUnitTypesSelect();
+        }
+
+        function renderUnitTypesList() {
+            const list = document.getElementById('unitTypesList');
+            list.innerHTML = '';
+            unitTypes.forEach((t, idx) => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center bg-[#252525] border border-gray-800 p-2 rounded-lg text-xs';
+                item.innerHTML = `
+                    <span class="text-gray-200 font-medium truncate pr-2">${t}</span>
+                    <div class="flex space-x-1 shrink-0">
+                        <button onclick="editUnitType(${idx})" class="text-amber-400 hover:text-amber-300 p-1" title="Editar"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button onclick="deleteUnitType(${idx})" class="text-red-400 hover:text-red-300 p-1" title="Excluir"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addNewUnitType() {
+            const input = document.getElementById('newTypeInput');
+            const val = input.value.trim();
+            if (val && !unitTypes.includes(val)) {
+                unitTypes.push(val);
+                saveUnitTypes();
+                input.value = '';
+                renderUnitTypesList();
+            }
+        }
+
+        function editUnitType(idx) {
+            const current = unitTypes[idx];
+            const updated = prompt("Editar Tipo de Unidade:", current);
+            if (updated && updated.trim() !== "") {
+                unitTypes[idx] = updated.trim();
+                saveUnitTypes();
+                renderUnitTypesList();
+            }
+        }
+
+        function deleteUnitType(idx) {
+            if (confirm(`Excluir o tipo "${unitTypes[idx]}"?`)) {
+                unitTypes.splice(idx, 1);
+                saveUnitTypes();
+                renderUnitTypesList();
+            }
+        }
+
+        // OPERAÇÕES CRUD
         let editingTarget = null;
 
         function openAddModal() {
+            populateUnitTypesSelect();
             if (currentLevel === 1) {
                 editingTarget = { type: 'imovel', mode: 'add' };
                 document.getElementById('crudModalTitle').innerText = 'Adicionar Novo Imóvel';
@@ -626,6 +876,7 @@
 
         function openEditImovel(id, e) {
             e.stopPropagation();
+            populateUnitTypesSelect();
             const imovel = appData.find(i => i.id === id);
             if (!imovel) return;
             editingTarget = { type: 'imovel', mode: 'edit', id };
@@ -634,7 +885,7 @@
             document.getElementById('inputFormTitle').value = imovel.title;
             document.getElementById('inputFormAddress').value = imovel.address || '';
             document.getElementById('inputFormMatricula').value = imovel.matricula || '';
-            document.getElementById('inputFormType').value = imovel.type || 'Estação de Tratamento (ETE)';
+            document.getElementById('inputFormType').value = imovel.type || unitTypes[0];
             document.getElementById('extraFieldsImovel').classList.remove('hidden');
             document.getElementById('extraFieldsStep').classList.add('hidden');
             document.getElementById('crudModal').classList.remove('hidden');
@@ -775,7 +1026,15 @@
             }
         }
 
-        function exportCurrentViewPDF() {
+        // OPÇÃO DE GERAR RELATÓRIO PDF (DOWNLOAD E ABRIR EM NOVA ABA)
+        function togglePdfDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('pdfDropdownMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function exportCurrentViewPDF(targetMode = 'download') {
+            document.getElementById('pdfDropdownMenu').classList.add('hidden');
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const username = localStorage.getItem(USERNAME_KEY) || 'Não Informado';
@@ -866,7 +1125,12 @@
                 doc.text(`Regulariza Excellington - Página ${i} de ${pageCount}`, 14, 285);
             }
 
-            doc.save(`Regularizacao_Imoveis_${today.replace(/\//g, '-')}.pdf`);
+            if (targetMode === 'open') {
+                const pdfBlob = doc.output('bloburl');
+                window.open(pdfBlob, '_blank');
+            } else {
+                doc.save(`Regularizacao_Imoveis_${today.replace(/\//g, '-')}.pdf`);
+            }
         }
 
         function readStoredExpiration() {
