@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Regulariza Excellington - Gestão de Imóveis</title>
+    <title>Regulariza Excellington - Gestão Imobiliária & Patrimonial</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -16,9 +16,7 @@
             --bg-dark: #121212;
             --card-dark: #1e1e1e;
         }
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         html, body {
             max-width: 100vw;
             overflow-x: hidden;
@@ -26,9 +24,7 @@
             color: #e0e0e0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .circle-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .circle-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .circle-btn:hover {
             transform: scale(1.06);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
@@ -43,14 +39,24 @@
         .badge-exigencia { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
         .badge-concluido { background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 5px; width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #1a1a1a; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+
+        .tab-btn {
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background-color: #2563eb;
+            color: #ffffff;
+            border-color: #3b82f6;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col w-full overflow-x-hidden">
 
-    <!-- INPUT INVISÍVEL PARA IMPORTAÇÃO DE ARQUIVO JSON -->
+    <!-- INPUT INVISÍVEL PARA IMPORTAÇÃO DE BACKUP JSON -->
     <input type="file" id="importJsonFileInput" accept=".json" class="hidden" onchange="handleImportFile(event)">
 
     <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
@@ -62,7 +68,7 @@
                 </div>
                 <div class="min-w-0">
                     <h1 class="text-sm sm:text-lg font-bold text-white tracking-wide truncate">Regulariza Excellington</h1>
-                    <p class="text-[10px] sm:text-xs text-gray-400 truncate">Assistente de Regularização de Imóveis</p>
+                    <p class="text-[10px] sm:text-xs text-gray-400 truncate">Gestão Imobiliária & Patrimonial • Saneamento</p>
                 </div>
             </div>
 
@@ -75,21 +81,19 @@
                     <button onclick="openUsernameModal()" class="text-amber-500 hover:underline text-xs ml-1" title="Editar Nome"><i class="fa-solid fa-pen text-[10px]"></i></button>
                 </div>
 
-                <!-- Botoeiras de Backup (Exportar / Importar) -->
-                <button onclick="exportDataJSON()" class="bg-gray-800 hover:bg-gray-700 text-blue-400 p-2 rounded-lg border border-gray-700 transition" title="Exportar Backup dos Dados (JSON)">
+                <button onclick="exportDataJSON()" class="bg-gray-800 hover:bg-gray-700 text-blue-400 p-2 rounded-lg border border-gray-700 transition" title="Exportar Backup (JSON)">
                     <i class="fa-solid fa-file-export text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="triggerImportJSON()" class="bg-gray-800 hover:bg-gray-700 text-emerald-400 p-2 rounded-lg border border-gray-700 transition" title="Importar Backup dos Dados (JSON)">
+                <button onclick="triggerImportJSON()" class="bg-gray-800 hover:bg-gray-700 text-emerald-400 p-2 rounded-lg border border-gray-700 transition" title="Importar Backup (JSON)">
                     <i class="fa-solid fa-file-import text-xs sm:text-sm"></i>
                 </button>
-
-                <button onclick="openTermsModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-lg border border-gray-700 transition" title="Termos de Uso e Responsabilidade">
+                <button onclick="openTermsModal()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 p-2 rounded-lg border border-gray-700 transition" title="Termos de Responsabilidade">
                     <i class="fa-solid fa-file-contract text-xs sm:text-sm"></i>
                 </button>
                 <button onclick="openActivationModal(false)" class="bg-gray-800 hover:bg-gray-700 text-amber-500 p-2 rounded-lg border border-gray-700 transition" title="Ativação de Licença">
                     <i class="fa-solid fa-key text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="exitApp()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 p-2 rounded-lg border border-red-800/50 transition" title="Sair do Aplicativo">
+                <button onclick="exitApp()" class="bg-red-950/40 hover:bg-red-900/60 text-red-400 p-2 rounded-lg border border-red-800/50 transition" title="Sair">
                     <i class="fa-solid fa-power-off text-xs sm:text-sm"></i>
                 </button>
             </div>
@@ -99,14 +103,39 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col space-y-4 sm:space-y-6 overflow-x-hidden">
 
+        <!-- NAVEGAÇÃO DE ABAS TEMÁTICAS -->
+        <nav class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-1.5 flex items-center gap-1.5 overflow-x-auto custom-scrollbar w-full">
+            <button onclick="switchTab('regularizacao')" id="tab-regularizacao" class="tab-btn active px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-file-signature text-blue-400"></i> Regularização
+            </button>
+            <button onclick="switchTab('aquisicao')" id="tab-aquisicao" class="tab-btn px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-cart-shopping text-emerald-400"></i> Aquisição
+            </button>
+            <button onclick="switchTab('construcao')" id="tab-construcao" class="tab-btn px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-helmet-safety text-amber-400"></i> Construção
+            </button>
+            <button onclick="switchTab('locacao')" id="tab-locacao" class="tab-btn px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-purple-400"></i> Locação
+            </button>
+            <button onclick="switchTab('adequacao')" id="tab-adequacao" class="tab-btn px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-screwdriver-wrench text-cyan-400"></i> Adequação
+            </button>
+            <button onclick="switchTab('manutencao')" id="tab-manutencao" class="tab-btn px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-wrench text-orange-400"></i> Manutenção Predial
+            </button>
+            <button onclick="switchTab('seguranca')" id="tab-seguranca" class="tab-btn px-3 py-2 rounded-lg border border-transparent text-xs font-semibold text-gray-300 hover:bg-gray-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-cat text-red-400"></i> Segurança Patrimonial
+            </button>
+        </nav>
+
         <!-- PAINEL RESUMO EXECUTIVO -->
         <section class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-4 w-full shadow-lg">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-3 pb-3 border-b border-gray-800 gap-2">
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-blue-400"></i> Painel Resumo e Desempenho Operacional
+                        <i class="fa-solid fa-chart-line text-blue-400"></i> Desempenho: <span id="lblActiveTabTitle" class="text-blue-400">Regularização Fundiária</span>
                     </h3>
-                    <p class="text-[11px] text-gray-400">Panorama consolidado do avanço dos processos sob sua responsabilidade.</p>
+                    <p class="text-[11px] text-gray-400">Panorama consolidado dos processos na área selecionada.</p>
                 </div>
                 <div class="w-full md:w-auto flex items-center bg-[#171a21] border border-[#2a2f3d] px-3 py-1.5 rounded-lg justify-between md:justify-start gap-3">
                     <span class="text-[11px] text-gray-400 font-medium">Índice de Eficiência:</span>
@@ -119,7 +148,7 @@
                 </div>
             </div>
 
-            <!-- GRID DE INDICADORES CARDS -->
+            <!-- GRID DE INDICADORES -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                 <div class="bg-[#252525] border border-gray-800 p-2.5 sm:p-3 rounded-lg flex items-center justify-between">
                     <div>
@@ -173,7 +202,7 @@
             </div>
         </section>
 
-        <!-- NAVEGAÇÃO BREADCRUMB / BOTOEIRA RESPONSIVA -->
+        <!-- BREADCRUMB / BOTOEIRA RESPONSIVA -->
         <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center bg-[#1e1e1e] border border-gray-800 p-3 sm:p-4 rounded-xl gap-3 w-full">
             <div class="flex items-center space-x-2 text-xs sm:text-sm text-gray-400 flex-wrap overflow-hidden" id="breadcrumbPath">
                 <!-- Preenchido via JS -->
@@ -185,7 +214,7 @@
                     <span>Voltar</span>
                 </button>
                 
-                <!-- DROPDOWN DE OPÇÕES DE RELATÓRIO PDF -->
+                <!-- DROPDOWN DE RELATÓRIO PDF -->
                 <div class="relative flex-1 sm:flex-none">
                     <button onclick="togglePdfDropdown(event)" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center justify-center space-x-1.5 transition shadow">
                         <i class="fa-solid fa-file-pdf"></i>
@@ -209,16 +238,16 @@
             </div>
         </div>
 
-        <!-- PAINEL CENTRAL DE VISUALIZAÇÃO EM CÍRCULOS (NODES) -->
+        <!-- PAINEL CENTRAL EM CÍRCULOS (NODES) -->
         <section class="bg-[#1e1e1e] border border-gray-800 rounded-2xl p-4 sm:p-6 md:p-8 flex-1 flex flex-col min-h-[400px] w-full overflow-hidden">
             <div class="mb-4 sm:mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-gray-800 pb-4 gap-3">
                 <div>
                     <h2 class="text-base sm:text-xl font-bold text-white flex items-center gap-2" id="currentViewTitle">
-                        <i class="fa-solid fa-city text-blue-500"></i> Imóveis em Regularização
+                        <i class="fa-solid fa-city text-blue-500"></i> Imóveis Registados
                     </h2>
-                    <p class="text-[11px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1" id="currentViewSubtitle">Clique num círculo para acessar as atividades do imóvel.</p>
+                    <p class="text-[11px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1" id="currentViewSubtitle">Clique num círculo para gerir as atividades.</p>
                 </div>
-                <!-- Legendas ajustáveis -->
+                <!-- Legendas -->
                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] sm:text-xs w-full lg:w-auto">
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span> Pendente</span>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span> Em Andamento</span>
@@ -237,8 +266,54 @@
 
     <!-- RODAPÉ -->
     <footer class="bg-[#1e1e1e] border-t border-gray-800 py-3 sm:py-4 px-4 text-center text-[10px] sm:text-xs text-gray-500 w-full">
-        <p>Regulariza Excellington • Ferramenta de Gestão Imobiliária</p>
+        <p>Regulariza Excellington • Ferramenta Integrada de Gestão Imobiliária e Patrimonial</p>
     </footer>
+
+    <!-- MODAL: OPÇÕES DE IMPORTAÇÃO (JUNTA OU SUBSTITUIR) -->
+    <div id="importOptionsModal" class="fixed inset-0 bg-black/85 hidden items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-md space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-import text-emerald-400"></i> Como deseja importar os dados?
+                </h3>
+                <button onclick="closeImportOptionsModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <p class="text-xs text-gray-300 leading-relaxed">
+                Você já possui dados gravados neste dispositivo. Escolha como o aplicativo deve processar as informações do arquivo importado:
+            </p>
+
+            <div class="space-y-3 pt-1">
+                <button onclick="executeImport('merge')" class="w-full text-left p-3.5 bg-[#252525] hover:bg-[#2e2e2e] border border-blue-600/40 hover:border-blue-500 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-blue-900/40 text-blue-400 flex items-center justify-center font-bold text-base shrink-0">
+                            <i class="fa-solid fa-code-merge"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white group-hover:text-blue-300">Juntar / Mesclar Dados (Recomendado)</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Acrescenta novos imóveis e atualiza os existentes sem apagar seus dados atuais.</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button onclick="executeImport('replace')" class="w-full text-left p-3.5 bg-[#252525] hover:bg-[#2e2e2e] border border-red-600/40 hover:border-red-500 rounded-xl transition group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-red-900/40 text-red-400 flex items-center justify-center font-bold text-base shrink-0">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white group-hover:text-red-300">Substituir Tudo</h4>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Apaga completamente o banco de dados local e aplica os dados do arquivo.</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <div class="pt-3 border-t border-gray-800 flex justify-end">
+                <button onclick="closeImportOptionsModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg text-xs font-medium">Cancelar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL: MANUTENÇÃO DE DADOS (CRIAR / EDITAR) -->
     <div id="crudModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-3 sm:p-4 z-50">
@@ -312,13 +387,11 @@
                 <button onclick="closeTypesConfigModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <!-- Adicionar Tipo -->
             <div class="flex gap-2">
                 <input type="text" id="newTypeInput" placeholder="Ex: Tanque Suctor, Elevatória EEE" class="flex-1 bg-[#2a2a2a] border border-gray-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-blue-500">
                 <button onclick="addNewUnitType()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shrink-0">Adicionar</button>
             </div>
 
-            <!-- Lista de Tipos Existentes -->
             <div id="unitTypesList" class="flex-1 overflow-y-auto custom-scrollbar space-y-1.5 pr-1 my-2">
                 <!-- Injetado via JS -->
             </div>
@@ -329,7 +402,7 @@
         </div>
     </div>
 
-    <!-- MODAL: CADASTRO / EDIÇÃO DE USUÁRIO RESPONSÁVEL -->
+    <!-- MODAL: CADASTRO DE USUÁRIO -->
     <div id="usernameModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-md space-y-4">
             <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
@@ -344,7 +417,7 @@
         </div>
     </div>
 
-    <!-- MODAL: TERMOS DE USO E RESPONSABILIDADE OPERACIONAL -->
+    <!-- MODAL: TERMOS DE USO -->
     <div id="termsModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-[#1e1e1e] border border-gray-800 rounded-xl p-5 sm:p-6 w-full max-w-2xl space-y-4 max-h-[85vh] flex flex-col">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -354,11 +427,10 @@
                 <button onclick="closeTermsModal()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="flex-1 overflow-y-auto custom-scrollbar text-xs text-gray-300 space-y-3 pr-2 leading-relaxed">
-                <p class="font-bold text-amber-400">ÂMBITO DE ATUAÇÃO ADMINISTRATIVA EM REGULARIZAÇÃO DE IMÓVEIS</p>
-                <p>Este aplicativo destina-se ao suporte operacional e controle administrativo dos processos de regularização imobiliária.</p>
+                <p class="font-bold text-amber-400">O ÂMBITO DE ATUAÇÃO É APENAS ADMINISTRATIVO</p>
+                <p>Este aplicativo destina-se ao suporte operacional e controle administrativo dos processos de regularização imobiliária e patrimonial.</p>
                 <p><strong class="text-white">1. Limites Profissionais:</strong> As atividades registradas nesta ferramenta restringem-se ao acompanhamento documental, requerimento de certidões, triagem de exigências cartorárias e gestão de fluxos. Não incluem a emissão de laudos de engenharia (CREA/CAU), pareceres jurídicos (OAB) ou laudos formais de avaliação imobiliária (CRECI/PTAM).</p>
                 <p><strong class="text-white">2. Responsabilidade pelos Dados:</strong> As informações inseridas nesta plataforma são mantidas localmente no dispositivo do utilizador (LocalStorage). O utilizador é responsável pela exatidão dos status informados nos relatórios emitidos.</p>
-                <p><strong class="text-white">3. Acompanhamento de Prazos:</strong> O cumprimento dos prazos legais referentes a prenotações, notas devolutivas e taxas municipais/cartorárias deve ser monitorizado em conjunto com os setores técnico e jurídico.</p>
             </div>
             <div class="pt-3 border-t border-gray-800 flex justify-end">
                 <button onclick="closeTermsModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-medium">Compreendido</button>
@@ -411,17 +483,29 @@
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPAL E LÓGICA DE APLICAÇÃO -->
+    <!-- SCRIPT PRINCIPAL -->
     <script>
         const USERNAME_KEY = 'excellington_regulariza_username_v1';
         const EXPIRATION_KEY = 'excellington_regulariza_expiration_v1';
-        const DATA_KEY = 'excellington_regulariza_data_v1';
+        const DATA_KEY_PREFIX = 'excellington_regulariza_data_tab_v2_';
         const TYPES_KEY = 'excellington_regulariza_types_v1';
 
+        let activeTab = 'regularizacao';
         let currentLevel = 1; 
         let selectedImovelId = null;
         let selectedActivityId = null;
         let isAppForcedBlocked = false;
+        let pendingImportData = null; // Armazena dados temporariamente para o modal de escolha
+
+        const tabTitles = {
+            regularizacao: 'Regularização Fundiária',
+            aquisicao: 'Aquisição de Imóvel',
+            construcao: 'Construção de Imóvel',
+            locacao: 'Locação de Imóvel',
+            adequacao: 'Adequação de Imóvel',
+            manutencao: 'Manutenção Predial',
+            seguranca: 'Segurança Patrimonial'
+        };
 
         const defaultTypes = [
             'Estação de Tratamento (ETE)',
@@ -431,76 +515,65 @@
             'Poço Artesiano / Captador'
         ];
 
-        const defaultData = [
-            {
-                id: 'imv-1',
-                title: 'ETE Central Januária',
-                address: 'Av. Beira Rio, s/n, Bairro Centro, Januária - MG',
-                matricula: '15.420 - 1º CRI',
-                type: 'Estação de Tratamento (ETE)',
-                activities: [
-                    {
-                        id: 'act-1-1',
-                        title: '1. Diagnóstico e Triagem Cartorária',
-                        steps: [
-                            { id: 'stp-1', title: 'Emissão de Certidão de Ônus e Ações Reais junto ao Cartório', status: 'Concluído', notes: 'Certidão emitida e arquivada sem ônus impeditivos.' },
-                            { id: 'stp-2', title: 'Consulta de Guias de IPTU/ITR e débitos municipais', status: 'Concluído', notes: 'Imóvel isento conforme Decreto Municipal.' },
-                            { id: 'stp-3', title: 'Verificação do decreto municipal de Utilidade Pública (DUP)', status: 'Concluído', notes: '' }
-                        ]
-                    },
-                    {
-                        id: 'act-1-2',
-                        title: '2. Instrução de Regularização Amigável / Desapropriação',
-                        steps: [
-                            { id: 'stp-4', title: 'Montagem do Kit de Notificação para proprietários registrados', status: 'Em Andamento', notes: 'Notificação enviada via AR em 10/10.' },
-                            { id: 'stp-5', title: 'Protocolo da proposta formal de indenização da área', status: 'Em Andamento', notes: 'Aguardando parecer do setor jurídico.' },
-                            { id: 'stp-6', title: 'Coleta de assinaturas na Minuta da Escritura Pública', status: 'Pendente', notes: '' }
-                        ]
-                    },
-                    {
-                        id: 'act-1-3',
-                        title: '3. Protocolo e Acompanhamento Registral',
-                        steps: [
-                            { id: 'stp-7', title: 'Prenotação do título no Cartório de Imóveis', status: 'Pendente', notes: '' },
-                            { id: 'stp-8', title: 'Tratamento de Nota Devolutiva / Exigência cartorária', status: 'Pendente', notes: '' },
-                            { id: 'stp-9', title: 'Retirada da Matrícula atualizada em nome da concessionária', status: 'Pendente', notes: '' }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'imv-2',
-                title: 'Reservatório Elevado R2',
-                address: 'Rua Alto do Cruzeiro, Nº 45, Bairro Novo Horizonte',
-                matricula: '8.912 - 1º CRI',
-                type: 'Reservatório Elevado/Apoiado',
-                activities: [
-                    {
-                        id: 'act-2-1',
-                        title: '1. Diagnóstico e Triagem Cartorária',
-                        steps: [
-                            { id: 'stp-20', title: 'Levantamento da Certidão de Concessionária anterior', status: 'Concluído', notes: '' },
-                            { id: 'stp-21', title: 'Verificação de divisas e posse amigável consolidada', status: 'Concluído', notes: '' }
-                        ]
-                    },
-                    {
-                        id: 'act-2-2',
-                        title: '2. Regularização Administrativa (Reurb-S)',
-                        steps: [
-                            { id: 'stp-22', title: 'Protocolo do Requerimento de Reurb junto ao Município', status: 'Em Exigência', notes: 'Solicitado novo memorial descritivo atualizado com ART do engenheiro.' },
-                            { id: 'stp-23', title: 'Emissão da Certidão de Regularização Fundiária (CRF)', status: 'Pendente', notes: '' }
-                        ]
-                    }
-                ]
-            }
-        ];
+        const defaultTabsData = {
+            regularizacao: [
+                {
+                    id: 'imv-reg-1',
+                    title: 'ETE Central Januária',
+                    address: 'Av. Beira Rio, s/n, Bairro Centro, Januária - MG',
+                    matricula: '15.420 - 1º CRI',
+                    type: 'Estação de Tratamento (ETE)',
+                    activities: [
+                        {
+                            id: 'act-1-1',
+                            title: '1. Diagnóstico e Triagem Cartorária',
+                            steps: [
+                                { id: 'stp-1', title: 'Emissão de Certidão de Ônus e Ações Reais junto ao Cartório', status: 'Concluído', notes: 'Certidão emitida e arquivada sem ônus impeditivos.' },
+                                { id: 'stp-2', title: 'Consulta de Guias de IPTU/ITR e débitos municipais', status: 'Concluído', notes: 'Imóvel isento conforme Decreto Municipal.' }
+                            ]
+                        },
+                        {
+                            id: 'act-1-2',
+                            title: '2. Instrução de Regularização Amigável / Desapropriação',
+                            steps: [
+                                { id: 'stp-4', title: 'Montagem do Kit de Notificação para proprietários registrados', status: 'Em Andamento', notes: 'Notificação enviada via AR em 10/10.' }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            aquisicao: [
+                {
+                    id: 'imv-acq-1',
+                    title: 'Terreno Reservatório R3',
+                    address: 'Rua das Palmeiras, Lote 12, Bairro Veredas',
+                    matricula: '22.105 - 1º CRI',
+                    type: 'Reservatório Elevado/Apoiado',
+                    activities: [
+                        {
+                            id: 'act-acq-1',
+                            title: '1. Estudo de Viabilidade e Prospecção',
+                            steps: [
+                                { id: 'stp-acq-1', title: 'Análise topográfica e teste de estanqueidade do solo', status: 'Concluído', notes: 'Solo aprovado pela equipe de engenharia.' },
+                                { id: 'stp-acq-2', title: 'Avaliação mercadológica da área (Laudo PTAM)', status: 'Em Andamento', notes: 'Aguardando laudo do avaliador habilitado.' }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            construcao: [],
+            locacao: [],
+            adequacao: [],
+            manutencao: [],
+            seguranca: []
+        };
 
         let appData = [];
         let unitTypes = [];
 
         window.onload = function() {
             loadUnitTypes();
-            loadAppData();
+            loadAppDataForTab(activeTab);
             checkAppAccess();
             renderView();
             
@@ -512,15 +585,53 @@
             });
         };
 
-        // EXPORTAÇÃO E IMPORTAÇÃO DE DADOS (BACKUP JSON)
+        function switchTab(tabKey) {
+            saveAppData(); 
+            activeTab = tabKey;
+            currentLevel = 1;
+            selectedImovelId = null;
+            selectedActivityId = null;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`tab-${tabKey}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            document.getElementById('lblActiveTabTitle').innerText = tabTitles[tabKey] || tabKey;
+
+            loadAppDataForTab(tabKey);
+            renderView();
+        }
+
+        function loadAppDataForTab(tabKey) {
+            const raw = localStorage.getItem(DATA_KEY_PREFIX + tabKey);
+            if (raw) {
+                try { appData = JSON.parse(raw); } catch(e) { appData = defaultTabsData[tabKey] || []; }
+            } else {
+                appData = defaultTabsData[tabKey] || [];
+                saveAppData();
+            }
+        }
+
+        function saveAppData() {
+            localStorage.setItem(DATA_KEY_PREFIX + activeTab, JSON.stringify(appData));
+            updateExecutiveDashboard();
+        }
+
         function exportDataJSON() {
+            saveAppData();
+            const allData = {};
+            Object.keys(tabTitles).forEach(tab => {
+                const raw = localStorage.getItem(DATA_KEY_PREFIX + tab);
+                allData[tab] = raw ? JSON.parse(raw) : (defaultTabsData[tab] || []);
+            });
+
             const backupPayload = {
                 app: 'Regulariza Excellington',
-                version: '1.0',
+                version: '2.0',
                 exportedAt: new Date().toISOString(),
                 username: localStorage.getItem(USERNAME_KEY) || '',
                 unitTypes: unitTypes,
-                appData: appData
+                allTabsData: allData
             };
 
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
@@ -528,7 +639,7 @@
             const todayStr = new Date().toISOString().slice(0, 10);
             
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `Backup_Regulariza_Excellington_${todayStr}.json`);
+            downloadAnchor.setAttribute("download", `Backup_Completo_Excellington_${todayStr}.json`);
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -546,35 +657,105 @@
             reader.onload = function(e) {
                 try {
                     const parsed = JSON.parse(e.target.result);
-                    if (!parsed.appData || !Array.isArray(parsed.appData)) {
+                    if (!parsed.allTabsData && !parsed.appData) {
                         alert("O arquivo fornecido não é um backup válido do Regulariza Excellington.");
                         return;
                     }
-
-                    if (confirm("Atenção: A importação irá substituir os imóveis e dados atuais no dispositivo. Deseja prosseguir?")) {
-                        appData = parsed.appData;
-                        if (parsed.unitTypes && Array.isArray(parsed.unitTypes)) {
-                            unitTypes = parsed.unitTypes;
-                            saveUnitTypes();
-                        }
-                        if (parsed.username) {
-                            localStorage.setItem(USERNAME_KEY, parsed.username);
-                            document.getElementById('profileUsernameDisplay').innerText = parsed.username;
-                        }
-
-                        saveAppData();
-                        currentLevel = 1;
-                        selectedImovelId = null;
-                        selectedActivityId = null;
-                        renderView();
-                        alert("Backup restaurado com sucesso!");
-                    }
+                    pendingImportData = parsed;
+                    openImportOptionsModal();
                 } catch (err) {
                     alert("Erro ao ler o arquivo JSON: " + err.message);
                 }
             };
             reader.readAsText(file);
             event.target.value = '';
+        }
+
+        function openImportOptionsModal() {
+            document.getElementById('importOptionsModal').classList.remove('hidden');
+            document.getElementById('importOptionsModal').classList.add('flex');
+        }
+
+        function closeImportOptionsModal() {
+            document.getElementById('importOptionsModal').classList.add('hidden');
+            document.getElementById('importOptionsModal').classList.remove('flex');
+            pendingImportData = null;
+        }
+
+        function executeImport(mode) {
+            if (!pendingImportData) return;
+            const parsed = pendingImportData;
+
+            // Importação de Tipos de Unidades e Usuário
+            if (parsed.unitTypes && Array.isArray(parsed.unitTypes)) {
+                if (mode === 'replace') {
+                    unitTypes = parsed.unitTypes;
+                } else {
+                    parsed.unitTypes.forEach(t => {
+                        if (!unitTypes.includes(t)) unitTypes.push(t);
+                    });
+                }
+                saveUnitTypes();
+            }
+
+            if (parsed.username && (!localStorage.getItem(USERNAME_KEY) || mode === 'replace')) {
+                localStorage.setItem(USERNAME_KEY, parsed.username);
+                document.getElementById('profileUsernameDisplay').innerText = parsed.username;
+            }
+
+            // Normalização das Estruturas das Abas
+            const importedTabs = parsed.allTabsData || { regularizacao: parsed.appData || [] };
+
+            Object.keys(tabTitles).forEach(tab => {
+                const incomingImoveis = importedTabs[tab] || [];
+                
+                if (mode === 'replace') {
+                    localStorage.setItem(DATA_KEY_PREFIX + tab, JSON.stringify(incomingImoveis));
+                } else {
+                    // MODO MESCLAR (JUNTA SEM APAGAR)
+                    const rawExisting = localStorage.getItem(DATA_KEY_PREFIX + tab);
+                    let existingImoveis = rawExisting ? JSON.parse(rawExisting) : [];
+
+                    incomingImoveis.forEach(incImv => {
+                        const matchIdx = existingImoveis.findIndex(e => e.id === incImv.id || e.title.trim().toLowerCase() === incImv.title.trim().toLowerCase());
+                        
+                        if (matchIdx >= 0) {
+                            // Imóvel já existe: mescla atividades
+                            const targetImv = existingImoveis[matchIdx];
+                            incImv.activities.forEach(incAct => {
+                                const actMatch = targetImv.activities.find(a => a.id === incAct.id || a.title.trim().toLowerCase() === incAct.title.trim().toLowerCase());
+                                if (actMatch) {
+                                    // Mescla Passos
+                                    incAct.steps.forEach(incStp => {
+                                        const stpMatch = actMatch.steps.find(s => s.id === incStp.id || s.title.trim().toLowerCase() === incStp.title.trim().toLowerCase());
+                                        if (stpMatch) {
+                                            stpMatch.status = incStp.status;
+                                            if (incStp.notes) stpMatch.notes = incStp.notes;
+                                        } else {
+                                            actMatch.steps.push(incStp);
+                                        }
+                                    });
+                                } else {
+                                    targetImv.activities.push(incAct);
+                                }
+                            });
+                        } else {
+                            // Imóvel novo: acrescenta à lista
+                            existingImoveis.push(incImv);
+                        }
+                    });
+
+                    localStorage.setItem(DATA_KEY_PREFIX + tab, JSON.stringify(existingImoveis));
+                }
+            });
+
+            closeImportOptionsModal();
+            loadAppDataForTab(activeTab);
+            currentLevel = 1;
+            selectedImovelId = null;
+            selectedActivityId = null;
+            renderView();
+            alert(mode === 'merge' ? "Dados mesclados e integrados com sucesso!" : "Dados substituídos com sucesso!");
         }
 
         function loadUnitTypes() {
@@ -601,21 +782,6 @@
                 opt.innerText = t;
                 select.appendChild(opt);
             });
-        }
-
-        function loadAppData() {
-            const raw = localStorage.getItem(DATA_KEY);
-            if (raw) {
-                try { appData = JSON.parse(raw); } catch(e) { appData = defaultData; }
-            } else {
-                appData = defaultData;
-                saveAppData();
-            }
-        }
-
-        function saveAppData() {
-            localStorage.setItem(DATA_KEY, JSON.stringify(appData));
-            updateExecutiveDashboard();
         }
 
         function calculateStatus(node) {
@@ -697,8 +863,8 @@
 
             if (currentLevel === 1) {
                 breadcrumb.innerHTML = `<span class="text-white font-semibold flex items-center gap-1"><i class="fa-solid fa-city"></i> Imóveis</span>`;
-                titleEl.innerHTML = `<i class="fa-solid fa-city text-blue-500"></i> Imóveis em Regularização`;
-                subtitleEl.innerText = `Clique num imóvel para gerir as suas atividades de regularização.`;
+                titleEl.innerHTML = `<i class="fa-solid fa-city text-blue-500"></i> Imóveis (${tabTitles[activeTab]})`;
+                subtitleEl.innerText = `Clique num círculo para gerir as suas atividades.`;
                 btnBack.classList.add('hidden');
                 btnBack.classList.remove('flex');
                 lblAdd.innerText = 'Novo Imóvel';
@@ -741,7 +907,7 @@
                     <span class="text-white font-semibold truncate max-w-[140px] sm:max-w-[200px]">${imovel.title}</span>
                 `;
                 titleEl.innerHTML = `<i class="fa-solid fa-list-check text-blue-500"></i> Atividades: ${imovel.title}`;
-                subtitleEl.innerText = `Clique numa atividade para abrir o checklist de passos operacionais.`;
+                subtitleEl.innerText = `Clique numa atividade para abrir o checklist de passos.`;
                 btnBack.classList.remove('hidden');
                 btnBack.classList.add('flex');
                 lblAdd.innerText = 'Nova Atividade';
@@ -786,7 +952,7 @@
                     <span class="text-white font-semibold truncate max-w-[120px] sm:max-w-[180px]">${act.title}</span>
                 `;
                 titleEl.innerHTML = `<i class="fa-solid fa-check-double text-blue-500"></i> Passos: ${act.title}`;
-                subtitleEl.innerText = `Altere o status de cada passo ou adicione novos itens de controlo.`;
+                subtitleEl.innerText = `Altere o status de cada passo ou adicione novos itens.`;
                 btnBack.classList.remove('hidden');
                 btnBack.classList.add('flex');
                 lblAdd.innerText = 'Novo Passo';
@@ -1126,16 +1292,17 @@
             const doc = new jsPDF();
             const username = localStorage.getItem(USERNAME_KEY) || 'Não Informado';
             const today = new Date().toLocaleDateString('pt-BR');
+            const activeTabName = tabTitles[activeTab] || activeTab;
 
             doc.setFillColor(23, 26, 33);
             doc.rect(0, 0, 210, 25, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text("REGULARIZA EXCELLINGTON", 14, 12);
+            doc.text(`REGULARIZA EXCELLINGTON - ${activeTabName.toUpperCase()}`, 14, 12);
             doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
-            doc.text("Relatório de Acompanhamento da Regularização Imobiliária", 14, 18);
+            doc.text("Relatório de Acompanhamento e Gestão Imobiliária", 14, 18);
 
             doc.setTextColor(50, 50, 50);
             doc.setFontSize(9);
@@ -1218,7 +1385,7 @@
                 const pdfBlob = doc.output('bloburl');
                 window.open(pdfBlob, '_blank');
             } else {
-                doc.save(`Regularizacao_Imoveis_${today.replace(/\//g, '-')}.pdf`);
+                doc.save(`Gestao_Imoveis_${activeTab}_${today.replace(/\//g, '-')}.pdf`);
             }
         }
 
